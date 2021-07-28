@@ -60,7 +60,10 @@ def post_article(chat_id, connection):
     res = execute_query_with_result(connection,
                                     post_article_query,
                                     (chat_id,))
-    return res[0]
+    if res:
+        return res[0]
+    else:
+        return []
 
 
 def get_approp_students(article_id, connection):
