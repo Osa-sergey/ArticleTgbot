@@ -2,9 +2,8 @@ import psycopg2
 from psycopg2 import OperationalError
 
 # noinspection SpellCheckingInspection
-#TODO Вписать токены для ботов и пароль от БД
+#TODO Вписать токен для бота и пароль от БД
 TOKEN_STUDENT = ""
-TOKEN_ADMIN = ""
 db_name = "hr_center"
 db_user = "postgres"
 db_password = ""
