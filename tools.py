@@ -23,7 +23,7 @@ has_university_id_query = """ SELECT 1 FROM target_article.student
 
 has_marked_tags_query = """SELECT 1 FROM target_article.students_to_tags WHERE student_id = %s """
 
-get_articles_query = """SELECT * FROM get_articles_for_student(%s)"""
+get_articles_query = """SELECT * FROM target_article.get_articles_for_student(%s)"""
 
 get_category_by_tag_query = """SELECT tag.category
                                FROM target_article.tag AS tag
@@ -34,17 +34,17 @@ get_student_marked_tags_query = """SELECT tag.tag_name
                            INNER JOIN target_article.tag as tag ON stt.tag_name_id = tag.tag_name
                            WHERE stt.student_id = %s AND tag.category = %s"""
 
-set_tag_to_student_query = """SELECT * FROM set_tag_to_student(%s, %s)"""
+set_tag_to_student_query = """SELECT * FROM target_article.set_tag_to_student(%s, %s)"""
 
-get_students_for_article_query = """SELECT * FROM get_students_for_article(%s)"""
+get_students_for_article_query = """SELECT * FROM target_article.get_students_for_article(%s)"""
 
-post_article_query = """SELECT * FROM post_article(%s)"""
+post_article_query = """SELECT * FROM target_article.post_article(%s)"""
 
-set_text_and_img_to_article_query = """SELECT * FROM set_text_and_img_to_article(%s, %s, %s)"""
+set_text_and_img_to_article_query = """SELECT * FROM target_article.set_text_and_img_to_article(%s, %s, %s)"""
 
 has_admin_permissions_query = """SELECT 1 FROM target_article.admins WHERE id = %s"""
 
-set_tag_to_article_query = """SELECT * FROM set_tag_to_article(%s, %s)"""
+set_tag_to_article_query = """SELECT * FROM target_article.set_tag_to_article(%s, %s)"""
 
 get_article_marked_tags_query = """SELECT tag.tag_name
                                    FROM target_article.tags_to_articles tta
