@@ -18,6 +18,11 @@ update_university_id_query = """INSERT INTO target_article.student (telegram_id,
                                 ON CONFLICT (telegram_id)
                                 DO UPDATE SET university_id = %s"""
 
+insert_tags_query = """INSERT INTO target_article.tag (tag_name, category)
+                       VALUES (%s, %s)
+                       ON CONFLICT (tag_name)
+                       DO NOTHING"""
+
 has_university_id_query = """ SELECT 1 FROM target_article.student 
                               WHERE telegram_id = %s AND university_id IS NOT NULL"""
 
