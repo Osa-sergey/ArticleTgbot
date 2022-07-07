@@ -1,4 +1,6 @@
--- Создание базы. Схема называется target_article
+-- Создание базы. 
+CREATE SCHEMA target_article;
+
 create table target_article.student
 (
 telegram_id int8 PRIMARY KEY,
@@ -53,7 +55,7 @@ $can_we_post$ LANGUAGE plpgsql;
 CREATE TRIGGER can_we_post BEFORE UPDATE OF is_posted ON target_article.article
 FOR EACH ROW EXECUTE PROCEDURE target_article.can_we_post_article();
 
-CREATE OR REPLACE FUNCTION get_students_for_article(IN new_article_id integer)
+CREATE OR REPLACE FUNCTION  target_article.get_students_for_article(IN new_article_id integer)
 RETURNS TABLE(telegram_ids int8)
 LANGUAGE sql
 AS $$
@@ -65,7 +67,7 @@ INNER JOIN target_article.tags_to_articles AS att ON stt.tag_name_id = att.tag_n
 WHERE att.article_id = new_article_id
 $$;
 
-CREATE OR REPLACE FUNCTION get_articles_for_student(IN student_telegram_id int8)
+CREATE OR REPLACE FUNCTION  target_article.get_articles_for_student(IN student_telegram_id int8)
 RETURNS TABLE(text text, id_image varchar)
 LANGUAGE sql
 AS $$
@@ -79,7 +81,7 @@ AND CURRENT_TIMESTAMP <= (art.date + interval '3 month')
 ORDER BY art.date
 $$;
 
-CREATE OR REPLACE FUNCTION set_tag_to_student(IN student_telegram_id int8, IN tag_name varchar)
+CREATE OR REPLACE FUNCTION  target_article.set_tag_to_student(IN student_telegram_id int8, IN tag_name varchar)
 RETURNS void
 AS $$
     BEGIN
@@ -93,7 +95,7 @@ AS $$
     END;
     $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION set_tag_to_article(IN approp_article_id int4, IN tag_name varchar)
+CREATE OR REPLACE FUNCTION  target_article.set_tag_to_article(IN approp_article_id int4, IN tag_name varchar)
 RETURNS void
 AS $$
     BEGIN
@@ -107,7 +109,7 @@ AS $$
     END;
    $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION set_text_and_img_to_article(IN publisher_id int4,
+CREATE OR REPLACE FUNCTION  target_article.set_text_and_img_to_article(IN publisher_id int4,
                                                        IN article_text text,
                                                        IN img_id varchar)
 RETURNS void
@@ -135,7 +137,7 @@ AS $$
    $$ LANGUAGE plpgsql;
 
 
-CREATE OR REPLACE FUNCTION post_article(IN publisher_id int8)
+CREATE OR REPLACE FUNCTION  target_article.post_article(IN publisher_id int8)
 RETURNS TABLE(id int4, text text, id_image varchar)
 AS $$
     DECLARE
