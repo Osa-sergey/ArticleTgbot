@@ -14,3 +14,4 @@ if __name__ == '__main__':
                 execute_query(con,
                               insert_tags_query,
                               (value, category))
+    con.close()
