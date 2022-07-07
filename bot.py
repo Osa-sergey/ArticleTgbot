@@ -6,7 +6,8 @@ from bot_data_layer import *
 
 
 bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
-con_pool = get_con_pool()
+db = DB()
+con_pool = db.con_pool
 
 
 @bot.message_handler(commands=['help'])
@@ -300,4 +301,4 @@ def create_admin_categories_markup():
     return Keyboa(items=list(categories_admin), copy_text_to_callback=True).keyboard
 
 
-bot.polling()
+bot.polling(none_stop=True, interval=0)

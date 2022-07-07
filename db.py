@@ -16,6 +16,7 @@ tags_admin = (("ИТКН", ["Назад", "Опубликовать"]),
               (["Назад", "Опубликовать"]),
               (["Назад", "Опубликовать"]))
 
+
 update_university_id_query = """INSERT INTO target_article.student (telegram_id, university_id)
                                 VALUES (%s, %s)
                                 ON CONFLICT (telegram_id)
@@ -70,6 +71,27 @@ get_article_id_query = """SELECT id FROM target_article.article
                     LIMIT 1"""
 
 
+class DB:
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super(DB, cls).__new__(cls)
+        return cls.__instance
+
+    def __init__(self):
+        try:
+            self.con_pool = psycopg2.pool.ThreadedConnectionPool(5, 20,
+                                                                 user=db_user,
+                                                                 password=db_password,
+                                                                 host=db_host,
+                                                                 port=db_port,
+                                                                 database=db_name)
+        except (Exception, psycopg2.DatabaseError) as error:
+            print("Ошибка при подключении к PostgreSQL", error)
+            self.con_pool = None
+
+
 def create_connection(name, user, password, host, port):
     connection = None
     try:
@@ -83,20 +105,6 @@ def create_connection(name, user, password, host, port):
     except OperationalError as e:
         print(f"Connection error '{e}'")
     return connection
-
-
-def get_con_pool():
-    con_pool = None
-    try:
-        con_pool = psycopg2.pool.ThreadedConnectionPool(5, 20,
-                                                        user=db_user,
-                                                        password=db_password,
-                                                        host=db_host,
-                                                        port=db_port,
-                                                        database=db_name)
-    except (Exception, psycopg2.DatabaseError) as error:
-        print("Ошибка при подключении к PostgreSQL", error)
-    return con_pool
 
 
 def execute_query(connection, query, params):
