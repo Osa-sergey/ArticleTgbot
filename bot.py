@@ -3,6 +3,7 @@ import re
 from telebot import types
 from keyboa import Keyboa
 from tools import *
+from settings import *
 
 bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
 

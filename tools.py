@@ -1,15 +1,6 @@
 import psycopg2
 from psycopg2 import OperationalError
 
-# noinspection SpellCheckingInspection
-#TODO Вписать токен для бота и пароль от БД
-TOKEN_STUDENT = ""
-db_name = "hr_center"
-db_user = "postgres"
-db_password = ""
-db_host = "127.0.0.1"
-db_port = "5432"
-
 categories = ("IT", "Металлургия", "Нефтянка", "Продажи", "Найти")
 tags = (("ИТКН", ["Назад", "Найти"]),
         ("ИНМИН", ["Назад", "Найти"]),
