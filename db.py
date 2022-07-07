@@ -1,5 +1,8 @@
 import psycopg2
+import psycopg2.pool
 from psycopg2 import OperationalError
+
+from settings import *
 
 categories = ("IT", "Металлургия", "Нефтянка", "Продажи", "Найти")
 tags = (("ИТКН", ["Назад", "Найти"]),
@@ -77,6 +80,20 @@ def create_connection(name, user, password, host, port):
     return connection
 
 
+def get_con_pool():
+    con_pool = None
+    try:
+        con_pool = psycopg2.pool.ThreadedConnectionPool(5, 20,
+                                                        user=db_user,
+                                                        password=db_password,
+                                                        host=db_host,
+                                                        port=db_port,
+                                                        database=db_name)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Ошибка при подключении к PostgreSQL", error)
+    return con_pool
+
+
 def execute_query(connection, query, params):
     connection.autocommit = True
     cursor = connection.cursor()
@@ -98,10 +115,3 @@ def execute_query_with_result(connection, query, params):
     except BaseException as e:
         print(f"The error '{e}' occurred")
         return ()
-
-
-def get_category_by_tag(tag, connection):
-    res = execute_query_with_result(connection,
-                                    get_category_by_tag_query,
-                                    (tag,))
-    return res[0][0]

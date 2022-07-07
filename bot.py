@@ -1,18 +1,19 @@
 import telebot
 import re
-from telebot import types
 from keyboa import Keyboa
-from tools import *
-from settings import *
+
+from bot_data_layer import *
+
 
 bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
+con_pool = get_con_pool()
 
 
 @bot.message_handler(commands=['help'])
 def help_command(message):
     chat_id = message.chat.id
-    connection = create_connection(db_name, db_user, db_password, db_host, db_port)
-    if is_user_admin(chat_id, connection):
+    con = con_pool.getconn()
+    if is_user_admin(chat_id, con):
         bot.send_message(message.chat.id,
                          "Загрузити изображение с текстом для формирования статьи или просто текст,"
                          " после чего выберите теги для статьи (не менее одног) и нажмите 'опубликовать'"
@@ -21,7 +22,7 @@ def help_command(message):
         bot.send_message(chat_id,
                          "Для начала работы введите номер студенческого билета с помощью команды /student_number "
                          "Для изменения списка выбранных тэгов введите команду /tags и выберите желаемые тэги")
-    connection.close()
+    con_pool.putconn(con)
 
 
 @bot.message_handler(commands=['start'])
@@ -50,16 +51,16 @@ def create_or_replace_article_text(message):
     text = text[6:]
     print(text)
     chat_id = message.chat.id
-    connection = create_connection(db_name, db_user, db_password, db_host, db_port)
-    if is_user_admin(chat_id, connection):
-        set_text_and_img_to_article(chat_id, text, "", connection)
+    con = con_pool.getconn()
+    if is_user_admin(chat_id, con):
+        set_text_and_img_to_article(chat_id, text, "", con)
         bot.send_message(chat_id=chat_id,
                          text="Данные внесены успешно")
         set_admin_categories_markup(chat_id)
     else:
         bot.send_message(chat_id=chat_id,
                          text="Вы не являетесь администратором")
-    connection.close()
+    con_pool.putconn(con)
 
 
 def init_university_id_and_tags(message):
@@ -78,8 +79,9 @@ def save_university_id(message):
         stud_number = res.group(0)
         if len(stud_number) == 8:
             stud_number = stud_number[1:]
-        connection = create_connection(db_name, db_user, db_password, db_host, db_port)
-        set_university_id(chat_id, stud_number, connection)
+        con = con_pool.getconn()
+        set_university_id(chat_id, stud_number, con)
+        con_pool.putconn(con)
         return True
     else:
         bot.send_message(chat_id, "Введен неправильный формат номера. Формат m******* или без m")
@@ -91,16 +93,16 @@ def handle_keyboard(call):
     text = call.data
     message_id = call.message.id
     chat_id = call.message.chat.id
-    connection = create_connection(db_name, db_user, db_password, db_host, db_port)
+    con = con_pool.getconn()
     if text == "Найти":
-        handle_find_btn(chat_id, message_id, connection)
+        handle_find_btn(chat_id, message_id, con)
     elif text in categories:
-        handle_category_btn(chat_id, message_id, text, connection)
+        handle_category_btn(chat_id, message_id, text, con)
     elif text == "Назад":
         handle_back_btn(chat_id, message_id)
     else:
-        handle_tag_btn(chat_id, message_id, text, connection)
-    connection.close()
+        handle_tag_btn(chat_id, message_id, text, con)
+    con_pool.putconn(con)
 
 
 @bot.callback_query_handler(func=lambda call: is_user_admin_lambda(call))
@@ -108,15 +110,16 @@ def handle_admin_keyboard(call):
     chat_id = call.message.chat.id
     text = call.data
     message_id = call.message.id
-    connection = create_connection(db_name, db_user, db_password, db_host, db_port)
+    con = con_pool.getconn()
     if text == "Опубликовать":
-        handle_post_btn(chat_id, message_id, connection)
+        handle_post_btn(chat_id, message_id, con)
     elif text in categories:
-        handle_admin_category_btn(chat_id, message_id, text, connection)
+        handle_admin_category_btn(chat_id, message_id, text, con)
     elif text == "Назад":
         handle_admin_back_btn(chat_id, message_id)
     else:
-        handle_admin_tag_btn(chat_id, message_id, text, connection)
+        handle_admin_tag_btn(chat_id, message_id, text, con)
+    con_pool.putconn(con)
 
 
 @bot.message_handler(content_types=['photo'])
@@ -124,16 +127,16 @@ def create_or_replace_article_with_img(message):
     text = message.caption
     img_id = message.photo[0].file_id
     chat_id = message.chat.id
-    connection = create_connection(db_name, db_user, db_password, db_host, db_port)
-    if is_user_admin(chat_id, connection):
-        set_text_and_img_to_article(chat_id, text, img_id, connection)
+    con = con_pool.getconn()
+    if is_user_admin(chat_id, con):
+        set_text_and_img_to_article(chat_id, text, img_id, con)
         bot.send_message(chat_id=chat_id,
                          text="Данные внесены успешно")
         set_admin_categories_markup(chat_id)
     else:
         bot.send_message(chat_id=chat_id,
                          text="Вы не являетесь администратором")
-    connection.close()
+    con_pool.putconn(con)
 
 
 def handle_find_btn(chat_id, message_id, connection):
@@ -273,83 +276,6 @@ def create_tags_markup(category, chat_id, connection):
     return Keyboa(items=items).keyboard
 
 
-def has_user_university_id(chat_id, connection):
-    result = execute_query_with_result(connection,
-                                       has_university_id_query,
-                                       (chat_id,))
-    if result:
-        return True
-    else:
-        return False
-
-
-def has_marked_tags(chat_id, connection):
-    result = execute_query_with_result(connection,
-                                       has_marked_tags_query,
-                                       (chat_id,))
-    if result:
-        return True
-    else:
-        return False
-
-
-def get_articles(chat_id, connection):
-    return execute_query_with_result(connection,
-                                     get_articles_query,
-                                     (chat_id,))
-
-
-def get_marked_tags(category, chat_id, connection):
-    res = execute_query_with_result(connection,
-                                    get_student_marked_tags_query,
-                                    (chat_id, category))
-    if res:
-        return res[0]
-    else:
-        return []
-
-
-def set_university_id(chat_id, stud_number, connection):
-    execute_query(connection,
-                  update_university_id_query,
-                  (chat_id, stud_number, stud_number))
-
-
-def set_tag_to_student(chat_id, tag_name, connection):
-    execute_query(connection,
-                  set_tag_to_student_query,
-                  (chat_id, tag_name))
-
-
-def post_article(chat_id, connection):
-    res = execute_query_with_result(connection,
-                                    post_article_query,
-                                    (chat_id,))
-    if res:
-        return res[0]
-    else:
-        return []
-
-
-def get_approp_students(article_id, connection):
-    return execute_query_with_result(connection,
-                                     get_students_for_article_query,
-                                     (article_id,))
-
-
-def get_article_id(chat_id, connection):
-    res = execute_query_with_result(connection,
-                                    get_article_id_query,
-                                    (chat_id,))
-    return res[0][0]
-
-
-def set_tag_to_article(article_id, tag_name, connection):
-    execute_query(connection,
-                  set_tag_to_article_query,
-                  (article_id, tag_name))
-
-
 def create_admin_tags_markup(category, article_id, connection):
     print(category)
     index = categories_admin.index(category)
@@ -361,44 +287,6 @@ def create_admin_tags_markup(category, article_id, connection):
         if items[i] in marked_tags:
             items[i] = items[i] + " ✅"
     return Keyboa(items=items).keyboard
-
-
-def get_admin_marked_tags(category, article_id, connection):
-    res = execute_query_with_result(connection,
-                                    get_article_marked_tags_query,
-                                    (article_id, category))
-    if res:
-        return res[0]
-    else:
-        return []
-
-
-def is_user_admin(chat_id, connection):
-    res = execute_query_with_result(connection,
-                                    has_admin_permissions_query,
-                                    (chat_id,))
-    if res:
-        return True
-    else:
-        return False
-
-
-def is_user_admin_lambda(call):
-    connection = create_connection(db_name, db_user, db_password, db_host, db_port)
-    res = execute_query_with_result(connection,
-                                    has_admin_permissions_query,
-                                    (call.message.chat.id,))
-    connection.close()
-    if res:
-        return True
-    else:
-        return False
-
-
-def set_text_and_img_to_article(chat_id, text, img_id, connection):
-    execute_query(connection,
-                  set_text_and_img_to_article_query,
-                  (chat_id, text, img_id))
 
 
 def set_admin_categories_markup(chat_id):

@@ -1,7 +1,7 @@
 import yaml
 from yaml.loader import SafeLoader
 
-from tools import *
+from db import *
 from settings import *
 
 if __name__ == '__main__':
