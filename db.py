@@ -26,6 +26,11 @@ insert_tags_query = """INSERT INTO target_article.tag (tag_name, category)
                        ON CONFLICT (tag_name)
                        DO NOTHING"""
 
+insert_admins_query = """INSERT INTO target_article.admins (id)
+                       VALUES (%s)
+                       ON CONFLICT (id)
+                       DO NOTHING"""
+
 has_university_id_query = """ SELECT 1 FROM target_article.student 
                               WHERE telegram_id = %s AND university_id IS NOT NULL"""
 
