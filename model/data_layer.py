@@ -1,5 +1,5 @@
-from db import DB
-from sql_queries import *
+from model.db import DB
+from model.sql_queries import *
 
 
 class DataLayer:
@@ -28,9 +28,6 @@ class DataLayer:
 
     def is_user_admin(self, chat_id):
         return self._has_result(has_admin_permissions_query, (chat_id,))
-
-    def is_user_admin_lambda(self, call):
-        return self._has_result(has_admin_permissions_query, (call.message.chat.id,))
 
     def get_articles(self, chat_id):
         return self.db.execute_query_with_result(get_articles_query,

@@ -1,19 +1,17 @@
 import telebot
 
-from bot_data_layer import DataLayer
-from bot_logic_layer import *
-from settings import TOKEN_STUDENT
+from controller.logic_layer import *
+from settings.settings import TOKEN_STUDENT
 
 bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
-dl = DataLayer()
-ll = LogicLayer(bot, dl)
+ll = LogicLayer(bot)
 
 
 @bot.message_handler(commands=['help'])
 def help_command(message):
     chat_id = message.chat.id
-    if dl.is_user_admin(chat_id):
-        bot.send_message(message.chat.id,
+    if ll.is_admin(chat_id):
+        bot.send_message(chat_id,
                          "Загрузити изображение с текстом для формирования статьи или просто текст,"
                          " после чего выберите теги для статьи (не менее одног) и нажмите 'опубликовать'"
                          "Новый текст и фото будут обновлять вашу статью, если она не опубликована")
@@ -38,8 +36,8 @@ def university_id_command(message):
 @bot.message_handler(commands=['tags'])
 def tags_command(message):
     chat_id = message.chat.id
-    markup = ll.create_categories_markup(dl.is_user_admin(chat_id))
-    bot.send_message(message.chat.id,
+    markup = ll.create_categories_markup(chat_id)
+    bot.send_message(chat_id,
                      "Выберите нужные теги и нажмите найти",
                      reply_markup=markup)
 
@@ -50,8 +48,8 @@ def create_or_replace_article_text(message):
     text = text[6:]
     print(text)
     chat_id = message.chat.id
-    if dl.is_user_admin(chat_id):
-        dl.set_text_and_img_to_article(chat_id, text, "")
+    if ll.is_admin(chat_id):
+        ll.set_article(chat_id, text, "")
         bot.send_message(chat_id=chat_id,
                          text="Данные внесены успешно")
         ll.set_admin_categories_markup(chat_id)
@@ -60,7 +58,22 @@ def create_or_replace_article_text(message):
                          text="Вы не являетесь администратором")
 
 
-@bot.callback_query_handler(func=lambda call: not dl.is_user_admin_lambda(call))
+@bot.message_handler(content_types=['photo'])
+def create_or_replace_article_with_img(message):
+    text = message.caption
+    img_id = message.photo[0].file_id
+    chat_id = message.chat.id
+    if ll.is_admin(chat_id):
+        ll.set_article(chat_id, text, img_id)
+        bot.send_message(chat_id=chat_id,
+                         text="Данные внесены успешно")
+        ll.set_admin_categories_markup(chat_id)
+    else:
+        bot.send_message(chat_id=chat_id,
+                         text="Вы не являетесь администратором")
+
+
+@bot.callback_query_handler(func=lambda call: not ll.is_admin_lambda(call))
 def handle_keyboard(call):
     text = call.data
     message_id = call.message.id
@@ -75,7 +88,7 @@ def handle_keyboard(call):
         ll.handle_tag_btn(chat_id, message_id, text)
 
 
-@bot.callback_query_handler(func=lambda call: dl.is_user_admin_lambda(call))
+@bot.callback_query_handler(func=lambda call: ll.is_admin_lambda(call))
 def handle_admin_keyboard(call):
     chat_id = call.message.chat.id
     text = call.data
@@ -88,21 +101,6 @@ def handle_admin_keyboard(call):
         ll.handle_admin_back_btn(chat_id, message_id)
     else:
         ll.handle_admin_tag_btn(chat_id, message_id, text)
-
-
-@bot.message_handler(content_types=['photo'])
-def create_or_replace_article_with_img(message):
-    text = message.caption
-    img_id = message.photo[0].file_id
-    chat_id = message.chat.id
-    if dl.is_user_admin(chat_id):
-        dl.set_text_and_img_to_article(chat_id, text, img_id)
-        bot.send_message(chat_id=chat_id,
-                         text="Данные внесены успешно")
-        ll.set_admin_categories_markup(chat_id)
-    else:
-        bot.send_message(chat_id=chat_id,
-                         text="Вы не являетесь администратором")
 
 
 bot.polling(none_stop=True, interval=0)

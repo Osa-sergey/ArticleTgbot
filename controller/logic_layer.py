@@ -1,5 +1,7 @@
 import re
 from keyboa import Keyboa
+
+from model.data_layer import DataLayer
 from tags import *
 
 
@@ -11,9 +13,9 @@ class LogicLayer:
             cls.__instance = super(LogicLayer, cls).__new__(cls)
         return cls.__instance
 
-    def __init__(self, bot, dl):
+    def __init__(self, bot):
         self.bot = bot
-        self.dl = dl
+        self.dl = DataLayer()
 
     def init_university_id_and_tags(self, message):
         if not self.save_university_id(message):
@@ -155,9 +157,8 @@ class LogicLayer:
                                    text=category,
                                    reply_markup=markup)
 
-    @staticmethod
-    def create_categories_markup(is_admin):
-        if is_admin:
+    def create_categories_markup(self, user_id):
+        if self.is_admin(user_id):
             return Keyboa(items=list(categories_admin), copy_text_to_callback=True).keyboard
         else:
             return Keyboa(items=list(categories), copy_text_to_callback=True).keyboard
@@ -184,3 +185,12 @@ class LogicLayer:
         self.bot.send_message(chat_id=chat_id,
                               text="Выберите нужные теги и нажмите опубликовать",
                               reply_markup=markup)
+
+    def is_admin_lambda(self, call):
+        return self.is_admin(call.message.chat.id)
+
+    def is_admin(self, user_id):
+        return self.dl.is_user_admin(user_id)
+
+    def set_article(self, chat_id, text, img_id):
+        self.dl.set_text_and_img_to_article(chat_id, text, img_id)

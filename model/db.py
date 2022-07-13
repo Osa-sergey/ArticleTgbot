@@ -1,8 +1,7 @@
 import psycopg2
 import psycopg2.pool
-from psycopg2 import OperationalError
 
-from settings import *
+from settings.settings import *
 
 
 class DB:
@@ -51,18 +50,3 @@ class DB:
             return ()
         finally:
             self.con_pool.putconn(con)
-
-
-def create_connection():
-    connection = None
-    try:
-        connection = psycopg2.connect(
-            database=DB_NAME,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            host=DB_HOST,
-            port=DB_PORT
-        )
-    except OperationalError as e:
-        print(f"Connection error '{e}'")
-    return connection
