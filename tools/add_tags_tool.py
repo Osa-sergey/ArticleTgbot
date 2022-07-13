@@ -2,16 +2,14 @@ import yaml
 from yaml.loader import SafeLoader
 
 from db import *
-from settings import *
+from sql_queries import insert_tags_query
 
 if __name__ == '__main__':
-    con = create_connection(db_name, db_user, db_password, db_host, db_port)
+    db = DB()
     with open('../scripts/new_tags.yaml') as f:
         data = yaml.load(f, Loader=SafeLoader)
     for i in data:
         for category, v in i.items():
             for value in v:
-                execute_query(con,
-                              insert_tags_query,
-                              (value, category))
-    con.close()
+                db.execute_query(insert_tags_query,
+                                 (value, category))

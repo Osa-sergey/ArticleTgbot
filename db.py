@@ -15,12 +15,12 @@ class DB:
 
     def __init__(self):
         try:
-            self.con_pool = psycopg2.pool.ThreadedConnectionPool(5, 20,
-                                                                 user=db_user,
-                                                                 password=db_password,
-                                                                 host=db_host,
-                                                                 port=db_port,
-                                                                 database=db_name)
+            self.con_pool = psycopg2.pool.ThreadedConnectionPool(DB_MIN_CON, DB_MAX_CON,
+                                                                 user=DB_USER,
+                                                                 password=DB_PASSWORD,
+                                                                 host=DB_HOST,
+                                                                 port=DB_PORT,
+                                                                 database=DB_NAME)
         except (Exception, psycopg2.DatabaseError) as error:
             print("Ошибка при подключении к PostgreSQL", error)
             self.con_pool = None
@@ -53,15 +53,15 @@ class DB:
             self.con_pool.putconn(con)
 
 
-def create_connection(name, user, password, host, port):
+def create_connection():
     connection = None
     try:
         connection = psycopg2.connect(
-            database=name,
-            user=user,
-            password=password,
-            host=host,
-            port=port
+            database=DB_NAME,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT
         )
     except OperationalError as e:
         print(f"Connection error '{e}'")
