@@ -2,6 +2,7 @@ import telebot
 
 from controller.logic_layer import *
 from settings.settings import TOKEN_STUDENT
+from settings.text_settings import *
 
 bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
 ll = LogicLayer(bot)
@@ -10,26 +11,18 @@ ll = LogicLayer(bot)
 @bot.message_handler(commands=['help'])
 def help_command(message):
     chat_id = message.chat.id
-    if ll.is_admin(chat_id):
-        bot.send_message(chat_id,
-                         "Загрузити изображение с текстом для формирования статьи или просто текст,"
-                         " после чего выберите теги для статьи (не менее одног) и нажмите 'опубликовать'"
-                         "Новый текст и фото будут обновлять вашу статью, если она не опубликована")
-    else:
-        bot.send_message(chat_id,
-                         "Для начала работы введите номер студенческого билета с помощью команды /student_number "
-                         "Для изменения списка выбранных тэгов введите команду /tags и выберите желаемые тэги")
+    ll.help_hint(chat_id)
 
 
 @bot.message_handler(commands=['start'])
 def start_command(message):
-    msg = bot.send_message(message.chat.id, "Введите номер студенческого билета")
+    msg = bot.send_message(message.chat.id, start_student)
     bot.register_next_step_handler(msg, ll.init_university_id_and_tags)
 
 
 @bot.message_handler(commands=['student_number'])
 def university_id_command(message):
-    msg = bot.send_message(message.chat.id, "Введите номер студенческого билета")
+    msg = bot.send_message(message.chat.id, student_number_student)
     bot.register_next_step_handler(msg, ll.save_university_id)
 
 
@@ -37,25 +30,14 @@ def university_id_command(message):
 def tags_command(message):
     chat_id = message.chat.id
     markup = ll.create_categories_markup(chat_id)
-    bot.send_message(chat_id,
-                     "Выберите нужные теги и нажмите найти",
-                     reply_markup=markup)
+    bot.send_message(chat_id, tags_student, reply_markup=markup)
 
 
 @bot.message_handler(commands=['text'])
 def create_or_replace_article_text(message):
-    text = message.text
-    text = text[6:]
-    print(text)
+    text = message.text[6:]
     chat_id = message.chat.id
-    if ll.is_admin(chat_id):
-        ll.set_article(chat_id, text, "")
-        bot.send_message(chat_id=chat_id,
-                         text="Данные внесены успешно")
-        ll.set_admin_categories_markup(chat_id)
-    else:
-        bot.send_message(chat_id=chat_id,
-                         text="Вы не являетесь администратором")
+    ll.create_or_edit_article(chat_id, text)
 
 
 @bot.message_handler(content_types=['photo'])
@@ -63,29 +45,15 @@ def create_or_replace_article_with_img(message):
     text = message.caption
     img_id = message.photo[0].file_id
     chat_id = message.chat.id
-    if ll.is_admin(chat_id):
-        ll.set_article(chat_id, text, img_id)
-        bot.send_message(chat_id=chat_id,
-                         text="Данные внесены успешно")
-        ll.set_admin_categories_markup(chat_id)
-    else:
-        bot.send_message(chat_id=chat_id,
-                         text="Вы не являетесь администратором")
+    ll.create_or_edit_article(chat_id, text, img_id)
 
 
 @bot.callback_query_handler(func=lambda call: not ll.is_admin_lambda(call))
 def handle_keyboard(call):
+    chat_id = call.message.chat.id
     text = call.data
     message_id = call.message.id
-    chat_id = call.message.chat.id
-    if text == "Найти":
-        ll.handle_find_btn(chat_id, message_id)
-    elif text in categories:
-        ll.handle_category_btn(chat_id, message_id, text)
-    elif text == "Назад":
-        ll.handle_back_btn(chat_id, message_id)
-    else:
-        ll.handle_tag_btn(chat_id, message_id, text)
+    ll.handle_keyboard(chat_id, text, message_id)
 
 
 @bot.callback_query_handler(func=lambda call: ll.is_admin_lambda(call))
@@ -93,14 +61,7 @@ def handle_admin_keyboard(call):
     chat_id = call.message.chat.id
     text = call.data
     message_id = call.message.id
-    if text == "Опубликовать":
-        ll.handle_post_btn(chat_id, message_id)
-    elif text in categories:
-        ll.handle_admin_category_btn(chat_id, message_id, text)
-    elif text == "Назад":
-        ll.handle_admin_back_btn(chat_id, message_id)
-    else:
-        ll.handle_admin_tag_btn(chat_id, message_id, text)
+    ll.handle_admin_keyboard(chat_id, text, message_id)
 
 
 bot.polling(none_stop=True, interval=0)

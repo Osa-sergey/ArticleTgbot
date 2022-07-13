@@ -1,8 +1,12 @@
 import re
-from keyboa import Keyboa
 
+from controller.service.admin.admin_keyboard_handler_service import AdminKeyHandlerService
+from controller.service.admin.admin_markup_service import AdminMarkupService
+from controller.service.student.keyboard_handler_service import KeyHandlerService
+from controller.service.student.markup_service import MarkupService
 from model.data_layer import DataLayer
 from tags import *
+from settings.text_settings import *
 
 
 class LogicLayer:
@@ -16,6 +20,8 @@ class LogicLayer:
     def __init__(self, bot):
         self.bot = bot
         self.dl = DataLayer()
+        self.akh = AdminKeyHandlerService(bot)
+        self.kh = KeyHandlerService(bot)
 
     def init_university_id_and_tags(self, message):
         if not self.save_university_id(message):
@@ -23,8 +29,9 @@ class LogicLayer:
         self.tags_command(message)
 
     def tags_command(self, message):
-        markup = self.create_categories_markup()
-        self.bot.send_message(message.chat.id,
+        chat_id = message.chat.id
+        markup = self.create_categories_markup(chat_id)
+        self.bot.send_message(chat_id,
                               "Выберите нужные теги и нажмите найти",
                               reply_markup=markup)
 
@@ -44,144 +51,8 @@ class LogicLayer:
             self.bot.send_message(chat_id, "Введен неправильный формат номера. Формат m******* или без m")
             return False
 
-    def handle_find_btn(self, chat_id, message_id):
-        print("Конец настройки")
-        if not self.dl.has_user_university_id(chat_id):
-            self.bot.edit_message_text(chat_id=chat_id,
-                                       message_id=message_id,
-                                       text="Вы не ввели номер студенческого билета."
-                                            " Воспользуйтесь /student_number или /start")
-        elif not self.dl.has_marked_tags(chat_id):
-            self.bot.edit_message_text(chat_id=chat_id,
-                                       message_id=message_id,
-                                       text="Выберите хотя бы один тег")
-        else:
-            articles = self.dl.get_articles(chat_id)
-            print(articles)
-            for article in articles:
-                if article[1]:
-                    print(article)
-                    self.bot.send_photo(chat_id=chat_id,
-                                        caption=article[0],
-                                        photo=article[1])
-                else:
-                    self.bot.send_message(chat_id=chat_id,
-                                          text=article[0])
-
-    def handle_category_btn(self, chat_id, message_id, category_name):
-        print("Категория")
-        markup = self.create_tags_markup(category_name, chat_id, False)
-        self.bot.edit_message_text(chat_id=chat_id,
-                                   message_id=message_id,
-                                   text=category_name,
-                                   reply_markup=markup)
-
-    def handle_back_btn(self, chat_id, message_id):
-        print("Назад")
-        markup = self.create_categories_markup(False)
-        self.bot.edit_message_text(chat_id=chat_id,
-                                   message_id=message_id,
-                                   text="Выберите нужные теги и нажмите найти",
-                                   reply_markup=markup)
-
-    def handle_tag_btn(self, chat_id, message_id, tag_name):
-        print("Теги")
-        emoji_index = tag_name.find(" ✅")
-        if emoji_index != -1:
-            tag_name = tag_name[:emoji_index]
-        print(tag_name)
-        self.dl.set_tag_to_student(chat_id, tag_name)
-        category = self.dl.get_category_by_tag(tag_name)
-        markup = self.create_tags_markup(category, chat_id, False)
-        self.bot.edit_message_text(chat_id=chat_id,
-                                   message_id=message_id,
-                                   text=category,
-                                   reply_markup=markup)
-
-    def handle_post_btn(self, chat_id, message_id):
-        print("Публикация")
-        article = self.dl.post_article(chat_id)
-        if article:
-            self.bot.edit_message_text(chat_id=chat_id,
-                                       message_id=message_id,
-                                       text="Успешная публикация")
-            article_id = article[0]
-            article_text = article[1]
-            article_img = article[2]
-            print(article_id)
-            approp_students = self.dl.get_approp_students(article_id)
-            print(approp_students)
-            if article_img:
-                for student in approp_students:
-                    self.bot.send_photo(chat_id=student[0],
-                                        caption=article_text,
-                                        photo=article_img)
-            else:
-                for student in approp_students:
-                    self.bot.send_message(chat_id=student[0],
-                                          text=article_text)
-        else:
-            self.bot.send_message(chat_id=chat_id,
-                                  text="У статьи нет тегов")
-
-    def handle_admin_category_btn(self, chat_id, message_id, category_name):
-        print("Категория")
-        article_id = self.dl.get_article_id(chat_id)
-        markup = self.create_tags_markup(category_name, article_id, True)
-        self.bot.edit_message_text(chat_id=chat_id,
-                                   message_id=message_id,
-                                   text=category_name,
-                                   reply_markup=markup)
-
-    def handle_admin_back_btn(self, chat_id, message_id):
-        print("Назад")
-        markup = self.create_categories_markup(True)
-        self.bot.edit_message_text(chat_id=chat_id,
-                                   message_id=message_id,
-                                   text="Выберите нужные теги и нажмите опубликовать",
-                                   reply_markup=markup)
-
-    def handle_admin_tag_btn(self, chat_id, message_id, tag_name):
-        print("Теги")
-        emoji_index = tag_name.find(" ✅")
-        if emoji_index != -1:
-            tag_name = tag_name[:emoji_index]
-        print(tag_name)
-        article_id = self.dl.get_article_id(chat_id)
-        print(article_id)
-        self.dl.set_tag_to_article(article_id, tag_name)
-        category = self.dl.get_category_by_tag(tag_name)
-        markup = self.create_tags_markup(category, article_id, True)
-        self.bot.edit_message_text(chat_id=chat_id,
-                                   message_id=message_id,
-                                   text=category,
-                                   reply_markup=markup)
-
-    def create_categories_markup(self, user_id):
-        if self.is_admin(user_id):
-            return Keyboa(items=list(categories_admin), copy_text_to_callback=True).keyboard
-        else:
-            return Keyboa(items=list(categories), copy_text_to_callback=True).keyboard
-
-    def create_tags_markup(self, category, chat_id, is_admin):
-        print(category)
-        if is_admin:
-            index = categories_admin.index(category)
-            items = list(tags_admin[index])
-            marked_tags = self.dl.get_admin_marked_tags(category, chat_id)
-        else:
-            index = categories.index(category)
-            items = list(tags[index])
-            marked_tags = self.dl.get_marked_tags(category, chat_id)
-        print(f"marked_tags '{marked_tags}'")
-        for i in range(len(items) - 1):
-            print(items[i])
-            if items[i] in marked_tags:
-                items[i] = items[i] + " ✅"
-        return Keyboa(items=items).keyboard
-
     def set_admin_categories_markup(self, chat_id):
-        markup = self.create_categories_markup(True)
+        markup = self.create_categories_markup(chat_id)
         self.bot.send_message(chat_id=chat_id,
                               text="Выберите нужные теги и нажмите опубликовать",
                               reply_markup=markup)
@@ -194,3 +65,44 @@ class LogicLayer:
 
     def set_article(self, chat_id, text, img_id):
         self.dl.set_text_and_img_to_article(chat_id, text, img_id)
+
+    def create_or_edit_article(self, chat_id, text, img_id=""):
+        if self.is_admin(chat_id):
+            self.set_article(chat_id, text, img_id)
+            self.bot.send_message(chat_id=chat_id, text=data_accepted)
+            self.set_admin_categories_markup(chat_id)
+        else:
+            self.bot.send_message(chat_id=chat_id, text=not_admin)
+
+    def handle_keyboard(self, chat_id, text, message_id):
+        if text == find:
+            self.kh.handle_find_btn(chat_id, message_id)
+        elif text in categories:
+            self.kh.handle_category_btn(chat_id, message_id, text)
+        elif text == back:
+            self.kh.handle_back_btn(chat_id, message_id)
+        else:
+            self.kh.handle_tag_btn(chat_id, message_id, text)
+
+    def handle_admin_keyboard(self, chat_id, text, message_id):
+        if text == publish:
+            self.akh.handle_post_btn(chat_id, message_id)
+        elif text in categories:
+            self.akh.handle_admin_category_btn(chat_id, message_id, text)
+        elif text == back:
+            self.akh.handle_admin_back_btn(chat_id, message_id)
+        else:
+            self.akh.handle_admin_tag_btn(chat_id, message_id, text)
+
+    def create_categories_markup(self, chat_id):
+        if self.is_admin(chat_id):
+            return AdminMarkupService.create_categories_markup()
+        else:
+            return MarkupService.create_categories_markup()
+
+    def help_hint(self, chat_id):
+        if self.is_admin(chat_id):
+            self.bot.send_message(chat_id, help_admin)
+        else:
+            self.bot.send_message(chat_id, help_student)
+
