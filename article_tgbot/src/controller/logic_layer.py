@@ -1,13 +1,14 @@
+import logging
 import re
 
-from controller.service.admin.admin_keyboard_handler_service import AdminKeyHandlerService
-from controller.service.admin.admin_markup_service import AdminMarkupService
-from controller.service.admin_service import is_admin
-from controller.service.student.keyboard_handler_service import KeyHandlerService
-from controller.service.student.markup_service import MarkupService
-from model.data_layer import DataLayer
-from tags import *
-from settings.text_settings import *
+from article_tgbot.src.controller.service.admin.admin_keyboard_handler_service import AdminKeyHandlerService
+from article_tgbot.src.controller.service.admin.admin_markup_service import AdminMarkupService
+from article_tgbot.src.controller.service.admin_service import is_admin
+from article_tgbot.src.controller.service.student.keyboard_handler_service import KeyHandlerService
+from article_tgbot.src.controller.service.student.markup_service import MarkupService
+from article_tgbot.src.model.data_layer import DataLayer
+from article_tgbot.src.tags import *
+from article_tgbot.settings.text_settings import *
 
 
 class LogicLayer:
@@ -23,6 +24,7 @@ class LogicLayer:
         self.dl = DataLayer()
         self.akh = AdminKeyHandlerService(bot)
         self.kh = KeyHandlerService(bot)
+        self.logger = logging.getLogger(__name__)
 
     def init_university_id_and_tags(self, message):
         if not self.save_university_id(message):

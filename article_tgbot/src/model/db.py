@@ -1,7 +1,7 @@
 import psycopg2
 import psycopg2.pool
 
-from settings.settings import *
+from article_tgbot.settings.settings import *
 
 
 class DB:

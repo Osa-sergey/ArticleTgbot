@@ -1,11 +1,16 @@
+import logging
+
 import telebot
 
-from controller.logic_layer import *
-from settings.settings import TOKEN_STUDENT
-from settings.text_settings import *
+from article_tgbot.settings.logger_conf import logger_configure
+from article_tgbot.src.controller.logic_layer import *
+from article_tgbot.settings.settings import TOKEN_STUDENT
+from article_tgbot.settings.text_settings import *
 
 bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
 ll = LogicLayer(bot)
+logger_configure()
+logger = logging.getLogger("article_tgbot")
 
 
 @bot.message_handler(commands=['help'])

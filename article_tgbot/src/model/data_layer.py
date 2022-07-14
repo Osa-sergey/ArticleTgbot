@@ -1,5 +1,7 @@
-from model.db import DB
-from model.sql_queries import *
+import logging
+
+from article_tgbot.src.model.db import DB
+from article_tgbot.src.model.sql_queries import *
 
 
 class DataLayer:

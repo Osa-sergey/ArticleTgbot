@@ -1,6 +1,8 @@
-from controller.service.student.markup_service import MarkupService
-from model.data_layer import DataLayer
-from settings.text_settings import *
+import logging
+
+from article_tgbot.src.controller.service.student.markup_service import MarkupService
+from article_tgbot.src.model.data_layer import DataLayer
+from article_tgbot.settings.text_settings import *
 
 
 class KeyHandlerService:
@@ -15,6 +17,7 @@ class KeyHandlerService:
         self.bot = bot
         self.dl = DataLayer()
         self.mkp = MarkupService()
+        self.logger = logging.getLogger(__name__)
 
     def handle_find_btn(self, chat_id, message_id):
         if not self.dl.has_user_university_id(chat_id):

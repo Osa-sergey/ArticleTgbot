@@ -1,6 +1,8 @@
-from controller.service.admin.admin_markup_service import AdminMarkupService
-from model.data_layer import DataLayer
-from settings.text_settings import *
+import logging
+
+from article_tgbot.src.controller.service.admin.admin_markup_service import AdminMarkupService
+from article_tgbot.src.model.data_layer import DataLayer
+from article_tgbot.settings.text_settings import *
 
 
 class AdminKeyHandlerService:
@@ -15,6 +17,7 @@ class AdminKeyHandlerService:
         self.bot = bot
         self.dl = DataLayer()
         self.mkp = AdminMarkupService()
+        self.logger = logging.getLogger(__name__)
 
     def handle_post_btn(self, chat_id, message_id):
         article = self.dl.post_article(chat_id)
