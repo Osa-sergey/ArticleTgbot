@@ -2,6 +2,7 @@ import re
 
 from controller.service.admin.admin_keyboard_handler_service import AdminKeyHandlerService
 from controller.service.admin.admin_markup_service import AdminMarkupService
+from controller.service.admin_service import is_admin
 from controller.service.student.keyboard_handler_service import KeyHandlerService
 from controller.service.student.markup_service import MarkupService
 from model.data_layer import DataLayer
@@ -55,17 +56,15 @@ class LogicLayer:
                               text=tags_choose_and_publish,
                               reply_markup=markup)
 
-    def is_admin_lambda(self, call):
-        return self.is_admin(call.message.chat.id)
-
-    def is_admin(self, user_id):
-        return self.dl.is_user_admin(user_id)
+    @staticmethod
+    def is_admin_lambda(call):
+        return is_admin(call.message.chat.id)
 
     def set_article(self, chat_id, text, img_id):
         self.dl.set_text_and_img_to_article(chat_id, text, img_id)
 
     def create_or_edit_article(self, chat_id, text, img_id=""):
-        if self.is_admin(chat_id):
+        if is_admin(chat_id):
             self.set_article(chat_id, text, img_id)
             self.bot.send_message(chat_id=chat_id, text=data_accepted)
             self.set_admin_categories_markup(chat_id)
@@ -92,14 +91,15 @@ class LogicLayer:
         else:
             self.akh.handle_admin_tag_btn(chat_id, message_id, text)
 
-    def create_categories_markup(self, chat_id):
-        if self.is_admin(chat_id):
+    @staticmethod
+    def create_categories_markup(chat_id):
+        if is_admin(chat_id):
             return AdminMarkupService.create_categories_markup()
         else:
             return MarkupService.create_categories_markup()
 
     def help_hint(self, chat_id):
-        if self.is_admin(chat_id):
+        if is_admin(chat_id):
             self.bot.send_message(chat_id, help_admin)
         else:
             self.bot.send_message(chat_id, help_student)
