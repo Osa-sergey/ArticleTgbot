@@ -1,5 +1,3 @@
-import logging
-
 import telebot
 
 from article_tgbot.settings.logger_conf import logger_configure
