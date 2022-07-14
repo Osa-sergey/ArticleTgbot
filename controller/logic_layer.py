@@ -31,9 +31,7 @@ class LogicLayer:
     def tags_command(self, message):
         chat_id = message.chat.id
         markup = self.create_categories_markup(chat_id)
-        self.bot.send_message(chat_id,
-                              "Выберите нужные теги и нажмите найти",
-                              reply_markup=markup)
+        self.bot.send_message(chat_id, tags_choose_and_search, reply_markup=markup)
 
     def save_university_id(self, message):
         number = message.text
@@ -41,20 +39,20 @@ class LogicLayer:
         pattern = r'^[m]{0,1}[0-9]{7}$'
         res = re.search(pattern, number)
         if res is not None:
-            self.bot.send_message(chat_id, "Номер удачно внесен")
+            self.bot.send_message(chat_id, student_number_accepted)
             stud_number = res.group(0)
             if len(stud_number) == 8:
                 stud_number = stud_number[1:]
             self.dl.set_university_id(chat_id, stud_number)
             return True
         else:
-            self.bot.send_message(chat_id, "Введен неправильный формат номера. Формат m******* или без m")
+            self.bot.send_message(chat_id, student_number_format_error)
             return False
 
     def set_admin_categories_markup(self, chat_id):
         markup = self.create_categories_markup(chat_id)
         self.bot.send_message(chat_id=chat_id,
-                              text="Выберите нужные теги и нажмите опубликовать",
+                              text=tags_choose_and_publish,
                               reply_markup=markup)
 
     def is_admin_lambda(self, call):
@@ -105,4 +103,3 @@ class LogicLayer:
             self.bot.send_message(chat_id, help_admin)
         else:
             self.bot.send_message(chat_id, help_student)
-

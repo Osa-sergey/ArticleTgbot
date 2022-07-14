@@ -1,5 +1,6 @@
 from controller.service.admin.admin_markup_service import AdminMarkupService
 from model.data_layer import DataLayer
+from settings.text_settings import *
 
 
 class AdminKeyHandlerService:
@@ -20,7 +21,7 @@ class AdminKeyHandlerService:
         if article:
             self.bot.edit_message_text(chat_id=chat_id,
                                        message_id=message_id,
-                                       text="Успешная публикация")
+                                       text=success_publishing)
             article_id = article[0]
             article_text = article[1]
             article_img = article[2]
@@ -36,7 +37,7 @@ class AdminKeyHandlerService:
                                           text=article_text)
         else:
             self.bot.send_message(chat_id=chat_id,
-                                  text="У статьи нет тегов")
+                                  text=article_hasnt_tags)
 
     def handle_admin_category_btn(self, chat_id, message_id, category_name):
         article_id = self.dl.get_article_id(chat_id)
@@ -50,11 +51,11 @@ class AdminKeyHandlerService:
         markup = self.mkp.create_categories_markup()
         self.bot.edit_message_text(chat_id=chat_id,
                                    message_id=message_id,
-                                   text="Выберите нужные теги и нажмите опубликовать",
+                                   text=tags_choose_and_publish,
                                    reply_markup=markup)
 
     def handle_admin_tag_btn(self, chat_id, message_id, tag_name):
-        emoji_index = tag_name.find(" ✅")
+        emoji_index = tag_name.find(selected_tag)
         if emoji_index != -1:
             tag_name = tag_name[:emoji_index]
         article_id = self.dl.get_article_id(chat_id)

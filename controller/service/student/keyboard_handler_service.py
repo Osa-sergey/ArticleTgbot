@@ -1,5 +1,6 @@
 from controller.service.student.markup_service import MarkupService
 from model.data_layer import DataLayer
+from settings.text_settings import *
 
 
 class KeyHandlerService:
@@ -19,12 +20,11 @@ class KeyHandlerService:
         if not self.dl.has_user_university_id(chat_id):
             self.bot.edit_message_text(chat_id=chat_id,
                                        message_id=message_id,
-                                       text="Вы не ввели номер студенческого билета."
-                                            " Воспользуйтесь /student_number или /start")
+                                       text=add_student_number)
         elif not self.dl.has_marked_tags(chat_id):
             self.bot.edit_message_text(chat_id=chat_id,
                                        message_id=message_id,
-                                       text="Выберите хотя бы один тег")
+                                       text=choose_at_least_one_tag)
         else:
             articles = self.dl.get_articles(chat_id)
             for article in articles:
@@ -47,11 +47,11 @@ class KeyHandlerService:
         markup = self.mkp.create_categories_markup()
         self.bot.edit_message_text(chat_id=chat_id,
                                    message_id=message_id,
-                                   text="Выберите нужные теги и нажмите найти",
+                                   text=tags_choose_and_search,
                                    reply_markup=markup)
 
     def handle_tag_btn(self, chat_id, message_id, tag_name):
-        emoji_index = tag_name.find(" ✅")
+        emoji_index = tag_name.find(selected_tag)
         if emoji_index != -1:
             tag_name = tag_name[:emoji_index]
         self.dl.set_tag_to_student(chat_id, tag_name)

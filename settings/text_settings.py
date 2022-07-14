@@ -20,3 +20,22 @@ find = "Найти"
 back = "Назад"
 
 publish = "Опубликовать"
+
+tags_choose_and_search = "Выберите нужные теги и нажмите найти"
+
+student_number_accepted = "Номер удачно внесен"
+
+student_number_format_error = "Введен неправильный формат номера. Формат m******* или без m"
+
+tags_choose_and_publish = "Выберите нужные теги и нажмите опубликовать"
+
+success_publishing = "Успешная публикация"
+
+article_hasnt_tags = "У статьи нет тегов"
+
+add_student_number = """Вы не ввели номер студенческого билета.
+                         Воспользуйтесь /student_number или /start"""
+
+choose_at_least_one_tag = "Выберите хотя бы один тег"
+
+selected_tag = " ✅"
