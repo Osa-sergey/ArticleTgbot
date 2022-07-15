@@ -88,3 +88,12 @@ class DataLayer:
             return res[0]
         else:
             return []
+
+    def get_all_categories(self,):
+        res = self.db.execute_query_with_result(get_all_categories_query, ())
+        res = [x for t in res for x in t]
+        return res
+
+    def get_tags_by_category(self, category):
+        res = self.db.execute_query_with_result(get_tags_by_category_query, (category,))
+        return [x for t in res for x in t]

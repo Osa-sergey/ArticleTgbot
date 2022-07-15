@@ -7,7 +7,6 @@ from article_tgbot.src.controller.service.admin_service import is_admin
 from article_tgbot.src.controller.service.student.keyboard_handler_service import KeyHandlerService
 from article_tgbot.src.controller.service.student.markup_service import MarkupService
 from article_tgbot.src.model.data_layer import DataLayer
-from article_tgbot.src.tags import *
 from article_tgbot.settings.text_settings import *
 
 
@@ -24,6 +23,8 @@ class LogicLayer:
         self.dl = DataLayer()
         self.akh = AdminKeyHandlerService(bot)
         self.kh = KeyHandlerService(bot)
+        self.ams = AdminMarkupService()
+        self.ms = MarkupService()
         self.logger = logging.getLogger(__name__)
 
     def init_university_id_and_tags(self, message):
@@ -76,7 +77,7 @@ class LogicLayer:
     def handle_keyboard(self, chat_id, text, message_id):
         if text == find:
             self.kh.handle_find_btn(chat_id, message_id)
-        elif text in categories:
+        elif text in self.ms.categories:
             self.kh.handle_category_btn(chat_id, message_id, text)
         elif text == back:
             self.kh.handle_back_btn(chat_id, message_id)
@@ -86,19 +87,18 @@ class LogicLayer:
     def handle_admin_keyboard(self, chat_id, text, message_id):
         if text == publish:
             self.akh.handle_post_btn(chat_id, message_id)
-        elif text in categories:
+        elif text in self.ams.admin_categories:
             self.akh.handle_admin_category_btn(chat_id, message_id, text)
         elif text == back:
             self.akh.handle_admin_back_btn(chat_id, message_id)
         else:
             self.akh.handle_admin_tag_btn(chat_id, message_id, text)
 
-    @staticmethod
-    def create_categories_markup(chat_id):
+    def create_categories_markup(self, chat_id):
         if is_admin(chat_id):
-            return AdminMarkupService.create_categories_markup()
+            return self.ams.create_categories_markup()
         else:
-            return MarkupService.create_categories_markup()
+            return self.ms.create_categories_markup()
 
     def help_hint(self, chat_id):
         if is_admin(chat_id):

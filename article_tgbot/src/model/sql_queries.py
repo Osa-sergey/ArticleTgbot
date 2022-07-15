@@ -50,3 +50,7 @@ get_article_id_query = """SELECT id FROM target_article.article
                     WHERE is_posted = FALSE AND id_who_created = %s
                     ORDER BY date
                     LIMIT 1"""
+
+get_all_categories_query = "SELECT DISTINCT category FROM target_article.tag ORDER BY category"
+
+get_tags_by_category_query = "SELECT tag_name FROM target_article.tag WHERE category = %s ORDER BY tag_name"
