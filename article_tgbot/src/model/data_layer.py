@@ -85,7 +85,7 @@ class DataLayer:
         res = self.db.execute_query_with_result(get_article_marked_tags_query,
                                                 (article_id, category))
         if res:
-            return res[0]
+            return [x for t in res for x in t]
         else:
             return []
 
