@@ -1,3 +1,5 @@
+import logging
+
 import psycopg2
 import psycopg2.pool
 
@@ -13,6 +15,7 @@ class DB:
         return cls.__instance
 
     def __init__(self):
+        self.logger = logging.getLogger(__name__)
         try:
             self.con_pool = psycopg2.pool.ThreadedConnectionPool(DB_MIN_CON, DB_MAX_CON,
                                                                  user=DB_USER,
@@ -20,8 +23,8 @@ class DB:
                                                                  host=DB_HOST,
                                                                  port=DB_PORT,
                                                                  database=DB_NAME)
-        except (Exception, psycopg2.DatabaseError) as error:
-            print("Ошибка при подключении к PostgreSQL", error)
+        except (Exception, psycopg2.DatabaseError):
+            self.logger.exception("A error occurred while connecting to the database")
             self.con_pool = None
 
     def execute_query(self, query, params):
@@ -31,8 +34,8 @@ class DB:
         try:
             cursor.execute(query, params)
             cursor.close()
-        except BaseException as e:
-            print(f"The error '{e}' occurred")
+        except BaseException:
+            self.logger.exception("A error occurred while executing query without returned results")
         finally:
             self.con_pool.putconn(con)
 
@@ -45,8 +48,7 @@ class DB:
             result = cursor.fetchall()
             cursor.close()
             return result
-        except BaseException as e:
-            print(f"The error '{e}' occurred")
-            return ()
+        except BaseException:
+            self.logger.exception("A error occurred while executing query with returned results")
         finally:
             self.con_pool.putconn(con)

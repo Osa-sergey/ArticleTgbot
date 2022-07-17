@@ -40,7 +40,7 @@ class DataLayer:
                                                  (article_id,))
 
     def set_university_id(self, chat_id, stud_number):
-        self.db.execute_query(update_university_id_query,
+        self.db.execute_query(create_or_update_university_id_query,
                               (chat_id, stud_number, stud_number))
 
     def set_tag_to_student(self, chat_id, tag_name):

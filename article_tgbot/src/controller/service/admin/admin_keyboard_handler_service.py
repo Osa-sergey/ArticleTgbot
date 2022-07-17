@@ -38,9 +38,14 @@ class AdminKeyHandlerService:
                 for student in approp_students:
                     self.bot.send_message(chat_id=student[0],
                                           text=article_text)
+            self.logger.warning("Post successfully published",
+                                extra={"user": chat_id, "message_id": message_id})
         else:
+            self.logger.warning("Post hasn't selected tags",
+                                extra={"user": chat_id, "message_id": message_id})
             self.bot.send_message(chat_id=chat_id,
                                   text=article_hasnt_tags)
+        self.logger.debug("Finish handling admin publish button", extra={"user": chat_id, "message_id": message_id})
 
     def handle_admin_category_btn(self, chat_id, message_id, category_name):
         article_id = self.dl.get_article_id(chat_id)
@@ -49,6 +54,7 @@ class AdminKeyHandlerService:
                                    message_id=message_id,
                                    text=category_name,
                                    reply_markup=markup)
+        self.logger.debug("Finish handling admin categories", extra={"user": chat_id, "message_id": message_id})
 
     def handle_admin_back_btn(self, chat_id, message_id):
         markup = self.mkp.create_categories_markup()
@@ -56,6 +62,7 @@ class AdminKeyHandlerService:
                                    message_id=message_id,
                                    text=tags_choose_and_publish,
                                    reply_markup=markup)
+        self.logger.debug("Finish handling admin back button", extra={"user": chat_id, "message_id": message_id})
 
     def handle_admin_tag_btn(self, chat_id, message_id, tag_name):
         emoji_index = tag_name.find(selected_tag)
@@ -63,9 +70,12 @@ class AdminKeyHandlerService:
             tag_name = tag_name[:emoji_index]
         article_id = self.dl.get_article_id(chat_id)
         self.dl.set_tag_to_article(article_id, tag_name)
+        self.logger.info("The status of the tag has been changed for the post",
+                         extra={"user": chat_id, "tag": tag_name})
         category = self.dl.get_category_by_tag(tag_name)
         markup = self.mkp.create_tags_markup(category, article_id)
         self.bot.edit_message_text(chat_id=chat_id,
                                    message_id=message_id,
                                    text=category,
                                    reply_markup=markup)
+        self.logger.debug("Finish handling admin tags", extra={"user": chat_id, "message_id": message_id})

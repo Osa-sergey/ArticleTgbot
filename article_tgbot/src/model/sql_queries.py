@@ -1,4 +1,4 @@
-update_university_id_query = """INSERT INTO target_article.student (telegram_id, university_id)
+create_or_update_university_id_query = """INSERT INTO target_article.student (telegram_id, university_id)
                                 VALUES (%s, %s)
                                 ON CONFLICT (telegram_id)
                                 DO UPDATE SET university_id = %s"""

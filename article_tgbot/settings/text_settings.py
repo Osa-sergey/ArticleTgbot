@@ -39,3 +39,5 @@ add_student_number = """Вы не ввели номер студенческог
 choose_at_least_one_tag = "Выберите хотя бы один тег"
 
 selected_tag = " ✅"
+
+empty_post_text = "У статьи не может быть пустого содержания"

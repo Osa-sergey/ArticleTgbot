@@ -2,6 +2,7 @@ import logging
 
 from keyboa import Keyboa
 
+from article_tgbot.settings.text_settings import selected_tag
 from article_tgbot.src.model.data_layer import DataLayer
 
 
@@ -28,13 +29,14 @@ class AdminMarkupService:
         marked_tags = self.dl.get_admin_marked_tags(category, chat_id)
         for i in range(len(items) - 1):
             if items[i] in marked_tags:
-                items[i] = items[i] + " ✅"
+                items[i] = items[i] + selected_tag
         return Keyboa(items=items).keyboard
 
     def get_admin_categories(self):
         categories = self.dl.get_all_categories()
         categories.append("Опубликовать")
         categories = tuple(categories)
+        self.logger.info("Admin categories were created", extra={"categories": categories})
         return categories
 
     def get_admin_tags(self, categories):
@@ -46,4 +48,5 @@ class AdminMarkupService:
                 row_tags.append(buttons)
                 row_tags = tuple(row_tags)
                 tags.append(row_tags)
+        self.logger.info("Admin tags were created", extra={"tags": tags})
         return tuple(tags)
