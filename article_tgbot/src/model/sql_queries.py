@@ -1,22 +1,17 @@
-import psycopg2
-from psycopg2 import OperationalError
-
-categories = ("IT", "Металлургия", "Нефтянка", "Продажи", "Найти")
-tags = (("ИТКН", ["Назад", "Найти"]),
-        ("ИНМИН", ["Назад", "Найти"]),
-        (["Назад", "Найти"]),
-        (["Назад", "Найти"]))
-
-categories_admin = ("IT", "Металлургия", "Нефтянка", "Продажи", "Опубликовать")
-tags_admin = (("ИТКН", ["Назад", "Опубликовать"]),
-              ("ИНМИН", ["Назад", "Опубликовать"]),
-              (["Назад", "Опубликовать"]),
-              (["Назад", "Опубликовать"]))
-
-update_university_id_query = """INSERT INTO target_article.student (telegram_id, university_id)
+create_or_update_university_id_query = """INSERT INTO target_article.student (telegram_id, university_id)
                                 VALUES (%s, %s)
                                 ON CONFLICT (telegram_id)
                                 DO UPDATE SET university_id = %s"""
+
+insert_tags_query = """INSERT INTO target_article.tag (tag_name, category)
+                       VALUES (%s, %s)
+                       ON CONFLICT (tag_name)
+                       DO NOTHING"""
+
+insert_admins_query = """INSERT INTO target_article.admins (id)
+                       VALUES (%s)
+                       ON CONFLICT (id)
+                       DO NOTHING"""
 
 has_university_id_query = """ SELECT 1 FROM target_article.student 
                               WHERE telegram_id = %s AND university_id IS NOT NULL"""
@@ -56,47 +51,6 @@ get_article_id_query = """SELECT id FROM target_article.article
                     ORDER BY date
                     LIMIT 1"""
 
+get_all_categories_query = "SELECT DISTINCT category FROM target_article.tag ORDER BY category"
 
-def create_connection(name, user, password, host, port):
-    connection = None
-    try:
-        connection = psycopg2.connect(
-            database=name,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-        )
-    except OperationalError as e:
-        print(f"Connection error '{e}'")
-    return connection
-
-
-def execute_query(connection, query, params):
-    connection.autocommit = True
-    cursor = connection.cursor()
-    try:
-        cursor.execute(query, params)
-        cursor.close()
-    except BaseException as e:
-        print(f"The error '{e}' occurred")
-
-
-def execute_query_with_result(connection, query, params):
-    connection.autocommit = True
-    cursor = connection.cursor()
-    try:
-        cursor.execute(query, params)
-        result = cursor.fetchall()
-        cursor.close()
-        return result
-    except BaseException as e:
-        print(f"The error '{e}' occurred")
-        return ()
-
-
-def get_category_by_tag(tag, connection):
-    res = execute_query_with_result(connection,
-                                    get_category_by_tag_query,
-                                    (tag,))
-    return res[0][0]
+get_tags_by_category_query = "SELECT tag_name FROM target_article.tag WHERE category = %s ORDER BY tag_name"
