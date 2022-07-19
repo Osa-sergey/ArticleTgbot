@@ -36,7 +36,7 @@ class MarkupService:
         categories = self.dl.get_all_categories()
         categories.append("Найти")
         categories = tuple(categories)
-        self.logger.info("Student categories were created", extra={"categories": categories})
+        self.logger.info(f"Student categories were created. categories: {categories}")
         return categories
 
     def get_tags(self, categories):
@@ -48,5 +48,5 @@ class MarkupService:
                 row_tags.append(buttons)
                 row_tags = tuple(row_tags)
                 tags.append(row_tags)
-        self.logger.info("Student tags were created", extra={"tags": tags})
+        self.logger.info(f"Student tags were created. tags: {tags}")
         return tuple(tags)
