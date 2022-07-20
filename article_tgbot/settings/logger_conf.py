@@ -1,6 +1,6 @@
 import logging.config
 
-LOG_FILENAME = "article_tgbot\\logs\\log.txt"
+LOG_FILENAME = "logs\\log.txt"
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,

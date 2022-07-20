@@ -4,9 +4,10 @@ from yaml.loader import SafeLoader
 from article_tgbot.src.model.db import *
 from article_tgbot.src.model.sql_queries import insert_tags_query
 
-if __name__ == '__main__':
+
+def init_tags():
     db = DB()
-    with open('../../res/new_tags.yaml') as f:
+    with open('res/new_tags.yaml', encoding='utf-8') as f:
         data = yaml.load(f, Loader=SafeLoader)
     for i in data:
         for category, v in i.items():

@@ -4,7 +4,11 @@ from article_tgbot.settings.logger_conf import logger_configure
 from article_tgbot.src.controller.logic_layer import *
 from article_tgbot.settings.settings import TOKEN_STUDENT
 from article_tgbot.settings.text_settings import *
+from article_tgbot.src.tools.add_admins_tool import init_admins
+from article_tgbot.src.tools.add_tags_tool import init_tags
 
+init_admins()
+init_tags()
 bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
 ll = LogicLayer(bot)
 logger_configure()
