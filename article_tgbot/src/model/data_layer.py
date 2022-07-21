@@ -2,6 +2,7 @@ import logging
 
 from article_tgbot.src.model.db import DB
 from article_tgbot.src.model.sql_queries import *
+from article_tgbot.settings.settings import TAG_FOR_ALL_STUDENTS
 
 
 class DataLayer:
@@ -14,6 +15,7 @@ class DataLayer:
 
     def __init__(self):
         self.db = DB()
+        self.logger = logging.getLogger(__name__)
 
     def _has_result(self, method, params):
         result = self.db.execute_query_with_result(method, params)
@@ -36,8 +38,15 @@ class DataLayer:
                                                  (chat_id,))
 
     def get_approp_students(self, article_id):
-        return self.db.execute_query_with_result(get_students_for_article_query,
-                                                 (article_id,))
+        is_for_all = self.db.execute_query_with_result(is_article_for_all_query,
+                                                       (article_id, TAG_FOR_ALL_STUDENTS))
+        if len(is_for_all) == 1:
+            self.logger.info(f"The post broadcasted. post_id: {article_id}")
+            return self.db.execute_query_with_result(get_all_students_query,
+                                                     ())
+        else:
+            return self.db.execute_query_with_result(get_students_for_article_query,
+                                                     (article_id,))
 
     def set_university_id(self, chat_id, stud_number):
         self.db.execute_query(create_or_update_university_id_query,

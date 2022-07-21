@@ -54,3 +54,8 @@ get_article_id_query = """SELECT id FROM target_article.article
 get_all_categories_query = "SELECT DISTINCT category FROM target_article.tag ORDER BY category"
 
 get_tags_by_category_query = "SELECT tag_name FROM target_article.tag WHERE category = %s ORDER BY tag_name"
+
+is_article_for_all_query = "SELECT 1 FROM target_article.tags_to_articles " \
+                           "WHERE article_id = %s AND tag_name_id = %s"
+
+get_all_students_query = "SELECT telegram_id FROM target_article.student"
