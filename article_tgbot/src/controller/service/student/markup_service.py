@@ -2,8 +2,8 @@ import logging
 
 from keyboa import Keyboa
 
-from article_tgbot.settings.text_settings import selected_tag
-from article_tgbot.src.model.data_layer import DataLayer
+from settings.text_settings import selected_tag
+from model.data_layer import DataLayer
 
 
 class MarkupService:

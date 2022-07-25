@@ -1,8 +1,8 @@
 import logging
 
-from article_tgbot.src.model.db import DB
-from article_tgbot.src.model.sql_queries import *
-from article_tgbot.settings.settings import TAG_FOR_ALL_STUDENTS
+from .db import DB
+from .sql_queries import *
+from settings.settings import TAG_FOR_ALL_STUDENTS
 
 
 class DataLayer:

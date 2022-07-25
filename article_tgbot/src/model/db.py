@@ -3,7 +3,7 @@ import logging
 import psycopg2
 import psycopg2.pool
 
-from article_tgbot.settings.settings import *
+from settings.settings import *
 
 
 class DB:
@@ -21,7 +21,6 @@ class DB:
                                                                  user=DB_USER,
                                                                  password=DB_PASSWORD,
                                                                  host=DB_HOST,
-                                                                 port=DB_PORT,
                                                                  database=DB_NAME)
         except (Exception, psycopg2.DatabaseError):
             self.logger.exception("A error occurred while connecting to the database")

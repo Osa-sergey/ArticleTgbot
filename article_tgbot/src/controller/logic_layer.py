@@ -1,13 +1,13 @@
 import logging
 import re
 
-from article_tgbot.src.controller.service.admin.admin_keyboard_handler_service import AdminKeyHandlerService
-from article_tgbot.src.controller.service.admin.admin_markup_service import AdminMarkupService
-from article_tgbot.src.controller.service.admin_check_service import is_admin
-from article_tgbot.src.controller.service.student.keyboard_handler_service import KeyHandlerService
-from article_tgbot.src.controller.service.student.markup_service import MarkupService
-from article_tgbot.src.model.data_layer import DataLayer
-from article_tgbot.settings.text_settings import *
+from controller.service.admin.admin_keyboard_handler_service import AdminKeyHandlerService
+from controller.service.admin.admin_markup_service import AdminMarkupService
+from controller.service.admin_check_service import is_admin
+from controller.service.student.keyboard_handler_service import KeyHandlerService
+from controller.service.student.markup_service import MarkupService
+from model.data_layer import DataLayer
+from settings.text_settings import *
 
 
 class LogicLayer:

@@ -1,8 +1,8 @@
 import logging
 
-from article_tgbot.src.controller.service.admin.admin_markup_service import AdminMarkupService
-from article_tgbot.src.model.data_layer import DataLayer
-from article_tgbot.settings.text_settings import *
+from .admin_markup_service import AdminMarkupService
+from model.data_layer import DataLayer
+from settings.text_settings import *
 
 
 class AdminKeyHandlerService:

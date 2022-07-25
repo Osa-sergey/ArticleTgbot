@@ -1,8 +1,8 @@
 import logging
 
-from article_tgbot.src.controller.service.student.markup_service import MarkupService
-from article_tgbot.src.model.data_layer import DataLayer
-from article_tgbot.settings.text_settings import *
+from .markup_service import MarkupService
+from model.data_layer import DataLayer
+from settings.text_settings import *
 
 
 class KeyHandlerService:
