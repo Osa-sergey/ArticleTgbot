@@ -2,14 +2,14 @@ import telebot
 
 from settings.logger_conf import logger_configure
 from controller.logic_layer import *
-from settings.settings import TOKEN_STUDENT
+from settings.settings import BOT_TOKEN
 from settings.text_settings import *
 from tools.add_admins_tool import init_admins
 from tools.add_tags_tool import init_tags
 
 init_admins()
 init_tags()
-bot = telebot.TeleBot(TOKEN_STUDENT, parse_mode=None)
+bot = telebot.TeleBot(BOT_TOKEN, parse_mode=None)
 ll = LogicLayer(bot)
 logger_configure()
 logger = logging.getLogger("article_tgbot")
