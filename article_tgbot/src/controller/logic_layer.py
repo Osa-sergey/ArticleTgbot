@@ -8,15 +8,11 @@ from controller.service.student.keyboard_handler_service import KeyHandlerServic
 from controller.service.student.markup_service import MarkupService
 from model.data_layer import DataLayer
 from settings.text_settings import *
+from settings.settings import LOGGER
+from tools.meta_class import MetaSingleton
 
 
-class LogicLayer:
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(LogicLayer, cls).__new__(cls)
-        return cls.__instance
+class LogicLayer(metaclass=MetaSingleton):
 
     def __init__(self, bot):
         self.bot = bot

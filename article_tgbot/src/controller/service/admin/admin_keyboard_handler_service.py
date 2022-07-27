@@ -3,15 +3,11 @@ import logging
 from .admin_markup_service import AdminMarkupService
 from model.data_layer import DataLayer
 from settings.text_settings import *
+from settings.settings import LOGGER
+from tools.meta_class import MetaSingleton
 
 
-class AdminKeyHandlerService:
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(AdminKeyHandlerService, cls).__new__(cls)
-        return cls.__instance
+class AdminKeyHandlerService(metaclass=MetaSingleton):
 
     def __init__(self, bot):
         self.bot = bot

@@ -3,15 +3,11 @@ import logging
 from .db import DB
 from .sql_queries import *
 from settings.settings import TAG_FOR_ALL_STUDENTS
+from settings.settings import LOGGER
+from tools.meta_class import MetaSingleton
 
 
-class DataLayer:
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(DataLayer, cls).__new__(cls)
-        return cls.__instance
+class DataLayer(metaclass=MetaSingleton):
 
     def __init__(self):
         self.db = DB()

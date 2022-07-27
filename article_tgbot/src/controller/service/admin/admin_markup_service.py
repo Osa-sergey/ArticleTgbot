@@ -4,15 +4,11 @@ from keyboa import Keyboa
 
 from settings.text_settings import selected_tag
 from model.data_layer import DataLayer
+from settings.settings import LOGGER
+from tools.meta_class import MetaSingleton
 
 
-class AdminMarkupService:
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(AdminMarkupService, cls).__new__(cls)
-        return cls.__instance
+class AdminMarkupService(metaclass=MetaSingleton):
 
     def __init__(self):
         self.dl = DataLayer()
