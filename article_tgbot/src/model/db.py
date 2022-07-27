@@ -2,6 +2,7 @@ import logging
 
 import psycopg2
 import psycopg2.pool
+from psycopg2 import OperationalError
 
 from settings.settings import *
 
@@ -17,12 +18,22 @@ class DB:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         try:
-            self.con_pool = psycopg2.pool.ThreadedConnectionPool(DB_MIN_CON, DB_MAX_CON,
-                                                                 user=DB_USER,
-                                                                 password=DB_PASSWORD,
-                                                                 host=DB_HOST,
-                                                                 database=DB_NAME)
-        except (Exception, psycopg2.DatabaseError):
+            if IS_DEBUG:
+                self.con_pool = psycopg2.pool.ThreadedConnectionPool(DB_MIN_CON, DB_MAX_CON,
+                                                                     user=DB_USER,
+                                                                     password=DB_PASSWORD,
+                                                                     host=DB_HOST,
+                                                                     port=DB_PORT,
+                                                                     database=DB_NAME)
+                self.logger.info("DB connection in DEBUG mode")
+            else:
+                self.con_pool = psycopg2.pool.ThreadedConnectionPool(DB_MIN_CON, DB_MAX_CON,
+                                                                     user=DB_USER,
+                                                                     password=DB_PASSWORD,
+                                                                     host=DB_HOST,
+                                                                     database=DB_NAME)
+                self.logger.info("DB connection in PRODUCTION mode")
+        except OperationalError:
             self.logger.exception("A error occurred while connecting to the database")
             self.con_pool = None
 
@@ -33,7 +44,7 @@ class DB:
         try:
             cursor.execute(query, params)
             cursor.close()
-        except BaseException:
+        except Exception:
             self.logger.exception("A error occurred while executing query without returned results")
         finally:
             self.con_pool.putconn(con)
@@ -47,7 +58,7 @@ class DB:
             result = cursor.fetchall()
             cursor.close()
             return result
-        except BaseException:
+        except Exception:
             self.logger.exception("A error occurred while executing query with returned results")
         finally:
             self.con_pool.putconn(con)
