@@ -13,7 +13,7 @@ class KeyHandlerService(metaclass=MetaSingleton):
         self.bot = bot
         self.dl = DataLayer()
         self.mkp = MarkupService()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
 
     def handle_find_btn(self, chat_id, message_id):
         if not self.dl.has_user_university_id(chat_id):

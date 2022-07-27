@@ -11,7 +11,7 @@ class DataLayer(metaclass=MetaSingleton):
 
     def __init__(self):
         self.db = DB()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
 
     def _has_result(self, method, params):
         result = self.db.execute_query_with_result(method, params)

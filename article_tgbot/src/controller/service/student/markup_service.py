@@ -12,7 +12,7 @@ class MarkupService(metaclass=MetaSingleton):
 
     def __init__(self):
         self.dl = DataLayer()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
         self.categories = self.get_categories()
         self.tags = self.get_tags(self.categories)
 

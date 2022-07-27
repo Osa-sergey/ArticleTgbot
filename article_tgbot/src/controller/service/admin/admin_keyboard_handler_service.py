@@ -13,7 +13,7 @@ class AdminKeyHandlerService(metaclass=MetaSingleton):
         self.bot = bot
         self.dl = DataLayer()
         self.mkp = AdminMarkupService()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
 
     def handle_post_btn(self, chat_id, message_id):
         article = self.dl.post_article(chat_id)

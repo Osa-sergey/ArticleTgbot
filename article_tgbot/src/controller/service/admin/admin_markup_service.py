@@ -12,7 +12,7 @@ class AdminMarkupService(metaclass=MetaSingleton):
 
     def __init__(self):
         self.dl = DataLayer()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
         self.admin_categories = self.get_admin_categories()
         self.admin_tags = self.get_admin_tags(self.admin_categories)
 

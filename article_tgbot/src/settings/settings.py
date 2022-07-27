@@ -11,4 +11,4 @@ DB_PORT = 5433
 DB_MIN_CON = 5
 DB_MAX_CON = 20
 TAG_FOR_ALL_STUDENTS = os.getenv('TAG_FOR_ALL_STUDENTS')
-
+LOGGER = "article_tgbot"

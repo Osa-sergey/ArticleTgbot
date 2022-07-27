@@ -21,7 +21,7 @@ class LogicLayer(metaclass=MetaSingleton):
         self.kh = KeyHandlerService(bot)
         self.ams = AdminMarkupService()
         self.ms = MarkupService()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
 
     def init_university_id_and_tags(self, message):
         if not self.save_university_id(message):

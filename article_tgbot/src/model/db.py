@@ -12,7 +12,7 @@ from tools.meta_class import MetaSingleton
 class DB(metaclass=MetaSingleton):
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
         try:
             if IS_DEBUG:
                 self.con_pool = psycopg2.pool.ThreadedConnectionPool(DB_MIN_CON, DB_MAX_CON,
