@@ -3,7 +3,6 @@ import telebot
 from settings.logger_conf import logger_configure
 from controller.logic_layer import *
 from settings.settings import BOT_TOKEN
-from settings.text_settings import *
 from tools.add_admins_tool import init_admins
 from tools.add_tags_tool import init_tags
 
@@ -24,24 +23,19 @@ def help_command(message):
 @bot.message_handler(commands=['start'])
 def start_command(message):
     chat_id = message.chat.id
-    msg = bot.send_message(chat_id, start_student)
-    logger.info(f"Start of new student: {chat_id} registration")
-    bot.register_next_step_handler(msg, ll.init_university_id_and_tags)
+    ll.start_cmd(chat_id)
 
 
 @bot.message_handler(commands=['student_number'])
 def university_id_command(message):
     chat_id = message.chat.id
-    msg = bot.send_message(chat_id, student_number_student)
-    logger.info(f"Start of enter student number. user: {chat_id}")
-    bot.register_next_step_handler(msg, ll.save_university_id)
+    ll.student_number_cmd(chat_id)
 
 
 @bot.message_handler(commands=['tags'])
 def tags_command(message):
     chat_id = message.chat.id
-    markup = ll.create_categories_markup(chat_id)
-    bot.send_message(chat_id, tags_student, reply_markup=markup)
+    ll.tags_cmd(chat_id)
 
 
 @bot.message_handler(commands=['text'])

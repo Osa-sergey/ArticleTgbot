@@ -126,3 +126,29 @@ class LogicLayer:
             self.bot.send_message(chat_id, help_admin)
         else:
             self.bot.send_message(chat_id, help_student)
+
+    def start_cmd(self, chat_id):
+        if is_admin(chat_id):
+            self.bot.send_message(chat_id, unallowable)
+            self.logger.warning(f"Unallowable command: /start for administrator: {chat_id}")
+        else:
+            msg = self.bot.send_message(chat_id, start_student)
+            self.logger.info(f"Start of new student: {chat_id} registration")
+            self.bot.register_next_step_handler(msg, self.init_university_id_and_tags)
+
+    def student_number_cmd(self, chat_id):
+        if is_admin(chat_id):
+            self.bot.send_message(chat_id, unallowable)
+            self.logger.warning(f"Unallowable command: /student_number for administrator: {chat_id}")
+        else:
+            msg = self.bot.send_message(chat_id, student_number_student)
+            self.logger.info(f"Start of enter student number. user: {chat_id}")
+            self.bot.register_next_step_handler(msg, self.save_university_id)
+
+    def tags_cmd(self, chat_id):
+        if is_admin(chat_id):
+            self.bot.send_message(chat_id, unallowable)
+            self.logger.warning(f"Unallowable command: /tags for administrator: {chat_id}")
+        else:
+            markup = self.create_categories_markup(chat_id)
+            self.bot.send_message(chat_id, tags_student, reply_markup=markup)
