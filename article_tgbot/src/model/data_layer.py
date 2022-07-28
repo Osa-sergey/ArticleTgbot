@@ -102,3 +102,10 @@ class DataLayer(metaclass=MetaSingleton):
     def get_tags_by_category(self, category):
         res = self.db.execute_query_with_result(get_tags_by_category_query, (category,))
         return [x for t in res for x in t]
+
+    def get_rm_categories(self,):
+        res = self.db.execute_query_with_result(get_rm_category_query, (TAG_FOR_ALL_STUDENTS,))
+        if res:
+            return ''.join(res[0])
+        else:
+            return None

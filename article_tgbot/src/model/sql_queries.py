@@ -59,3 +59,6 @@ is_article_for_all_query = "SELECT 1 FROM target_article.tags_to_articles " \
                            "WHERE article_id = %s AND tag_name_id = %s"
 
 get_all_students_query = "SELECT telegram_id FROM target_article.student"
+
+get_rm_category_query = "SELECT category FROM target_article.tag as p WHERE tag_name = %s  AND \
+(SELECT count(tag_name) FROM target_article.tag WHERE category = p.category) = 1"
