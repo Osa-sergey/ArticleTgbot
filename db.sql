@@ -153,5 +153,3 @@ AS $$
         RETURNING article_id, ua.text, ua.id_image;
     END;
 $$ LANGUAGE plpgsql;
-
--- TODO Не забудьте внести id модераторов в таблицу admins
