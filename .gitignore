@@ -3,3 +3,5 @@
 /article_tgbot/logs/log.txt
 /schemas
 /article_tgbot/src/settings/settings.py
+/docker-compose.yml
+/res
