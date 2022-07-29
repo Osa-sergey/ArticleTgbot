@@ -74,7 +74,7 @@ class DataLayer(metaclass=MetaSingleton):
         res = self.db.execute_query_with_result(get_student_marked_tags_query,
                                                 (chat_id, category))
         if res:
-            return res[0]
+            return [x for t in res for x in t]
         else:
             return []
 
