@@ -1,6 +1,7 @@
 import logging.config
 
-LOG_FILENAME = "article_tgbot\\logs\\log.txt"
+WINDOWS_LOG_FILENAME = "logs\\log.txt"
+UNIX_LOG_FILENAME = "logs/log.txt"
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -21,7 +22,13 @@ LOGGING_CONFIG = {
             "formatter": "for_server_logs",
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOG_FILENAME,
+            "filename": WINDOWS_LOG_FILENAME,
+        },
+        "docker_file_output":  {
+            "formatter": "for_server_logs",
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": UNIX_LOG_FILENAME,
         }
 
     },
@@ -31,6 +38,7 @@ LOGGING_CONFIG = {
             "handlers": [
                 "console_output",
                 "file_output",
+                "docker_file_output"
             ],
         },
 

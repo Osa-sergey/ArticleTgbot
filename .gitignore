@@ -1,4 +1,7 @@
 # Project exclude paths
 /.idea/
-article_tgbot/settings/settings.py
-/article_tgbot/logs/
+/article_tgbot/logs/log.txt
+/schemas
+/article_tgbot/src/settings/settings.py
+/docker-compose.yml
+/res

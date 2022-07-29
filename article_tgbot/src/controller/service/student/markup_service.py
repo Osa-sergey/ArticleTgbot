@@ -2,21 +2,17 @@ import logging
 
 from keyboa import Keyboa
 
-from article_tgbot.settings.text_settings import selected_tag
-from article_tgbot.src.model.data_layer import DataLayer
+from settings.text_settings import selected_tag
+from model.data_layer import DataLayer
+from settings.settings import LOGGER, TAG_FOR_ALL_STUDENTS
+from tools.meta_class import MetaSingleton
 
 
-class MarkupService:
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(MarkupService, cls).__new__(cls)
-        return cls.__instance
+class MarkupService(metaclass=MetaSingleton):
 
     def __init__(self):
         self.dl = DataLayer()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(LOGGER)
         self.categories = self.get_categories()
         self.tags = self.get_tags(self.categories)
 
@@ -34,9 +30,12 @@ class MarkupService:
 
     def get_categories(self):
         categories = self.dl.get_all_categories()
+        rm_category = self.dl.get_rm_categories()
+        if rm_category:
+            categories.remove(rm_category)
         categories.append("Найти")
         categories = tuple(categories)
-        self.logger.info("Student categories were created", extra={"categories": categories})
+        self.logger.info(f"Student categories were created. categories: {categories}")
         return categories
 
     def get_tags(self, categories):
@@ -45,8 +44,10 @@ class MarkupService:
         for category in categories:
             if category != "Найти":
                 row_tags = self.dl.get_tags_by_category(category)
+                if TAG_FOR_ALL_STUDENTS in row_tags:
+                    row_tags.remove(TAG_FOR_ALL_STUDENTS)
                 row_tags.append(buttons)
                 row_tags = tuple(row_tags)
                 tags.append(row_tags)
-        self.logger.info("Student tags were created", extra={"tags": tags})
+        self.logger.info(f"Student tags were created. tags: {tags}")
         return tuple(tags)

@@ -1,19 +1,17 @@
 import logging
 
-from article_tgbot.src.model.db import DB
-from article_tgbot.src.model.sql_queries import *
+from .db import DB
+from .sql_queries import *
+from settings.settings import TAG_FOR_ALL_STUDENTS
+from settings.settings import LOGGER
+from tools.meta_class import MetaSingleton
 
 
-class DataLayer:
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super(DataLayer, cls).__new__(cls)
-        return cls.__instance
+class DataLayer(metaclass=MetaSingleton):
 
     def __init__(self):
         self.db = DB()
+        self.logger = logging.getLogger(LOGGER)
 
     def _has_result(self, method, params):
         result = self.db.execute_query_with_result(method, params)
@@ -36,8 +34,15 @@ class DataLayer:
                                                  (chat_id,))
 
     def get_approp_students(self, article_id):
-        return self.db.execute_query_with_result(get_students_for_article_query,
-                                                 (article_id,))
+        is_for_all = self.db.execute_query_with_result(is_article_for_all_query,
+                                                       (article_id, TAG_FOR_ALL_STUDENTS))
+        if len(is_for_all) == 1:
+            self.logger.info(f"The post broadcasted. post_id: {article_id}")
+            return self.db.execute_query_with_result(get_all_students_query,
+                                                     ())
+        else:
+            return self.db.execute_query_with_result(get_students_for_article_query,
+                                                     (article_id,))
 
     def set_university_id(self, chat_id, stud_number):
         self.db.execute_query(create_or_update_university_id_query,
@@ -69,7 +74,7 @@ class DataLayer:
         res = self.db.execute_query_with_result(get_student_marked_tags_query,
                                                 (chat_id, category))
         if res:
-            return res[0]
+            return [x for t in res for x in t]
         else:
             return []
 
@@ -97,3 +102,10 @@ class DataLayer:
     def get_tags_by_category(self, category):
         res = self.db.execute_query_with_result(get_tags_by_category_query, (category,))
         return [x for t in res for x in t]
+
+    def get_rm_categories(self,):
+        res = self.db.execute_query_with_result(get_rm_category_query, (TAG_FOR_ALL_STUDENTS,))
+        if res:
+            return ''.join(res[0])
+        else:
+            return None
