@@ -51,7 +51,7 @@ def create_or_replace_article_with_img(message):
     text = message.caption
     img_id = message.photo[0].file_id
     chat_id = message.chat.id
-    ll.create_or_edit_article(chat_id, text, img_id, message.id)
+    ll.create_or_edit_article(chat_id, text, message.id, img_id)
 
 
 @bot.callback_query_handler(func=lambda call: not ll.is_admin_lambda(call))
