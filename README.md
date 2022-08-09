@@ -37,7 +37,7 @@
 Для того, чтобы воспользоваться ботом можно использовать готовый docker образ из репозитория:
 
 ```sh
-    docker pull osasergey/article_tgbot
+    docker pull osasergey/article_tgbot:dev_compose-*
 ```
 
 Минимальная конфигурация для запуска в docker-compose выглядит следующим образом:
@@ -60,6 +60,9 @@ services:
 
   article_bot:
     image: osasergey/article_tgbot
+    restart: always
+    depends_on:
+      - db
     ports:
       - "8080:8080"
     environment:
