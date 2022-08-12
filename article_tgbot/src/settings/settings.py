@@ -10,5 +10,5 @@ IS_DEBUG = True if DB_HOST == LOCALHOST else False
 DB_PORT = 5433
 DB_MIN_CON = 5
 DB_MAX_CON = 20
-TAG_FOR_ALL_STUDENTS = os.getenv('TAG_FOR_ALL_STUDENTS')
+TAG_FOR_ALL_STUDENTS = os.getenv('TAG_FOR_ALL_STUDENTS', "Разослать всем")
 LOGGER = "article_tgbot"
