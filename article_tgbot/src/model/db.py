@@ -20,14 +20,16 @@ class DB(metaclass=MetaSingleton):
                                                                      password=DB_PASSWORD,
                                                                      host=DB_HOST,
                                                                      port=DB_PORT,
-                                                                     database=DB_NAME)
+                                                                     database=DB_NAME,
+                                                                     options=f"-c search_path={DB_SCHEMA}")
                 self.logger.info("DB connection in DEBUG mode")
             else:
                 self.con_pool = psycopg2.pool.ThreadedConnectionPool(DB_MIN_CON, DB_MAX_CON,
                                                                      user=DB_USER,
                                                                      password=DB_PASSWORD,
                                                                      host=DB_HOST,
-                                                                     database=DB_NAME)
+                                                                     database=DB_NAME,
+                                                                     options=f"-c search_path={DB_SCHEMA}")
                 self.logger.info("DB connection in PRODUCTION mode")
         except OperationalError:
             self.logger.exception("A error occurred while connecting to the database")

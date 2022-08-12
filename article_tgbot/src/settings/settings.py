@@ -2,6 +2,7 @@ import os
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 DB_NAME = os.getenv('DB_NAME')
+DB_SCHEMA = os.getenv('DB_SCHEMA')
 DB_USER = "postgres"
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 LOCALHOST = "localhost"

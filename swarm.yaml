@@ -31,6 +31,7 @@ services:
       DB_PASSWORD: /run/secrets/pg_password
       DB_HOST: bot_db
       DB_NAME: /run/secrets/pg_database
+      DB_SCHEMA: /run/secrets/pg_schema
     depends_on:
       - db
     volumes:
@@ -39,6 +40,7 @@ services:
       - pg_password
       - pg_database
       - bot_token
+      - pg_schema
 
 volumes:
   db_volume:
@@ -50,4 +52,5 @@ secrets:
     external: true
   pg_database:
     external: true
-
+  pg_schema:
+    external: true
