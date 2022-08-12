@@ -3,7 +3,6 @@ services:
   db:
     image: postgres
     environment:
-      POSTGRES_USER_FILE: /run/secrets/pg_user
       POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
       POSTGRES_DB_FILE: /run/secrets/pg_database
     volumes:
@@ -11,7 +10,6 @@ services:
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
     secrets:
       - pg_password
-      - pg_user
       - pg_database
 
   pgadmin:
@@ -30,18 +28,15 @@ services:
       - "8080:8080"
     environment:
       BOT_TOKEN: /run/secrets/bot_token
-      DB_USER: /run/secrets/pg_user
       DB_PASSWORD: /run/secrets/pg_password
       DB_HOST: bot_db
       DB_NAME: /run/secrets/pg_database
-      TAG_FOR_ALL_STUDENTS: Разослать всем
     depends_on:
       - db
     volumes:
       - ./res:/app/article_tgbot/res
     secrets:
       - pg_password
-      - pg_user
       - pg_database
       - bot_token
 
@@ -50,8 +45,6 @@ volumes:
 
 secrets:
   bot_token:
-    external: true
-  pg_user:
     external: true
   pg_password:
     external: true
