@@ -1,9 +1,9 @@
 import os
 
+LOGGER = "article_tgbot"
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 DB_NAME = os.getenv('DB_NAME')
-DB_SCHEMA = os.getenv('DB_SCHEMA')
-DB_USER = "postgres"
+DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 LOCALHOST = "localhost"
 DB_HOST = os.getenv('DB_HOST', LOCALHOST)
@@ -12,4 +12,4 @@ DB_PORT = 5433
 DB_MIN_CON = 5
 DB_MAX_CON = 20
 TAG_FOR_ALL_STUDENTS = os.getenv('TAG_FOR_ALL_STUDENTS', "Разослать всем")
-LOGGER = "article_tgbot"
+TAG_OTHER = os.getenv('TAG_OTHER', "^[А-Яа-я a-zA-Z]*([Д|д]ругое)$")

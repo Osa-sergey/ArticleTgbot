@@ -1,10 +1,11 @@
 import logging
+import re
 
 from keyboa import Keyboa
 
 from settings.text_settings import selected_tag
 from model.data_layer import DataLayer
-from settings.settings import LOGGER, TAG_FOR_ALL_STUDENTS
+from settings.settings import LOGGER, TAG_FOR_ALL_STUDENTS, TAG_OTHER
 from tools.meta_class import MetaSingleton
 
 
@@ -33,6 +34,7 @@ class MarkupService(metaclass=MetaSingleton):
         rm_category = self.dl.get_rm_categories()
         if rm_category:
             categories.remove(rm_category)
+        categories = self.order(categories)
         categories.append("Найти")
         categories = tuple(categories)
         self.logger.info(f"Student categories were created. categories: {categories}")
@@ -46,8 +48,18 @@ class MarkupService(metaclass=MetaSingleton):
                 row_tags = self.dl.get_tags_by_category(category)
                 if TAG_FOR_ALL_STUDENTS in row_tags:
                     row_tags.remove(TAG_FOR_ALL_STUDENTS)
+                row_tags = self.order(row_tags)
                 row_tags.append(buttons)
                 row_tags = tuple(row_tags)
                 tags.append(row_tags)
         self.logger.info(f"Student tags were created. tags: {tags}")
         return tuple(tags)
+
+    @staticmethod
+    def order(arr):
+        pattern = TAG_OTHER
+        for idx, element in enumerate(arr):
+            res = re.search(pattern, element)
+            if res is not None:
+                arr.insert(len(arr) + 1, arr.pop(idx))
+        return arr

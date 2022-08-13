@@ -1,10 +1,11 @@
 import logging
+import re
 
 from keyboa import Keyboa
 
 from settings.text_settings import selected_tag
 from model.data_layer import DataLayer
-from settings.settings import LOGGER
+from settings.settings import LOGGER, TAG_OTHER
 from tools.meta_class import MetaSingleton
 
 
@@ -30,6 +31,7 @@ class AdminMarkupService(metaclass=MetaSingleton):
 
     def get_admin_categories(self):
         categories = self.dl.get_all_categories()
+        categories = self.order(categories)
         categories.append("Опубликовать")
         categories = tuple(categories)
         self.logger.info(f"Admin categories were created. categories: {categories}")
@@ -41,8 +43,18 @@ class AdminMarkupService(metaclass=MetaSingleton):
         for category in categories:
             if category != "Опубликовать":
                 row_tags = self.dl.get_tags_by_category(category)
+                row_tags = self.order(row_tags)
                 row_tags.append(buttons)
                 row_tags = tuple(row_tags)
                 tags.append(row_tags)
         self.logger.info(f"Admin tags were created. tags: {tags}")
         return tuple(tags)
+
+    @staticmethod
+    def order(arr):
+        pattern = TAG_OTHER
+        for idx, element in enumerate(arr):
+            res = re.search(pattern, element)
+            if res is not None:
+                arr.insert(len(arr) + 1, arr.pop(idx))
+        return arr
