@@ -1,4 +1,5 @@
 import logging
+from prometheus_client import Counter
 
 from .markup_service import MarkupService
 from model.data_layer import DataLayer
@@ -8,6 +9,8 @@ from tools.meta_class import MetaSingleton
 
 
 class KeyHandlerService(metaclass=MetaSingleton):
+    btn_find_prom_counter = Counter('tgbot_btn_find_searches_total',
+                                    'The total number of searches for new config of tags')
 
     def __init__(self, bot):
         self.bot = bot
@@ -28,6 +31,7 @@ class KeyHandlerService(metaclass=MetaSingleton):
                                        text=choose_at_least_one_tag)
         else:
             articles = self.dl.get_articles(chat_id)
+            self.btn_find_prom_counter.inc()
             self.logger.debug(f"Student: {chat_id} has {len(articles)} for selected tags. message_id: {message_id}")
             for article in articles:
                 if article[1]:
