@@ -1,7 +1,6 @@
 import logging.config
-from settings import settings
+from settings.settings import ID
 
-USER = settings.DB_SCHEMA
 WINDOWS_LOG_FILENAME = "logs\\log.txt"
 UNIX_LOG_FILENAME = "logs/log.txt"
 LOGGING_CONFIG = {
@@ -9,7 +8,7 @@ LOGGING_CONFIG = {
     "disable_existing_loggers": False,
     "formatters": {
         "for_server_logs": {
-            "format": f"[%(asctime)s]  %(levelname)s  [{USER}] (%(filename)s:%(funcName)s:%(lineno)d) %(message)s",
+            "format": f"[%(asctime)s] %(levelname)s [{ID}] (%(filename)s:%(funcName)s:%(lineno)d) %(message)s",
             "datefmt": "%y-%m-%d %H:%M:%S",
         },
     },

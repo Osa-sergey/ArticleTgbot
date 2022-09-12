@@ -39,7 +39,9 @@
 - `DB_PASSWORD` - Пароль пользователя базы данных.
 - `DB_HOST` - Host базы данных.
 - `DB_NAME` - Название базы данных.
-- `DB_SCHEMA` - схема в которой хранятся данные бота. По умолчанию `target_article` 
+- `ID` - Уникальный идентификатор экземпляра. На его основе 
+формируется название схемы для БД, он проставляется в метриках и логах.
+По умолчанию `target_article` 
 
 ---
 `НЕОБЯЗАТЕЛЬНЫЕ`:
@@ -88,7 +90,7 @@ services:
       - DB_PASSWORD=1234
       - DB_HOST=db
       - DB_NAME=hr_center
-      - DB_SCHEMA=target_article
+      - ID=target_article
     volumes:
       - ./res:/app/article_tgbot/res
 
