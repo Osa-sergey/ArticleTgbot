@@ -23,6 +23,20 @@ back = "Назад"
 
 publish = "Опубликовать"
 
+yes_tags = "Да"
+
+no_tags = "Нет"
+
+yes_articles = "Показывать"
+
+no_articles = "Не показывать"
+
+wait_new_articles = "Ожидайте новых вакансий в ближайшее время"
+
+search_tags_question = "Выбраны все интересующие теги?"
+
+search_counter = "Количество вакансий, подходящих вашим тегам:"
+
 tags_choose_and_search = "Выберите нужные теги и нажмите найти"
 
 student_number_accepted = "Номер удачно внесен"

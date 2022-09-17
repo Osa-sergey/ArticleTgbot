@@ -77,7 +77,7 @@ INNER JOIN tags_to_articles AS att ON art.id = att.article_id
 INNER JOIN students_to_tags AS stt ON att.tag_name_id = stt.tag_name_id
 WHERE stt.student_id = student_telegram_id
 AND art.is_posted
-AND CURRENT_TIMESTAMP <= (art.date + interval '3 month')
+AND CURRENT_TIMESTAMP <= (art.date + interval '3 week')
 ORDER BY art.date
 $$;
 

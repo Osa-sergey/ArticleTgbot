@@ -3,9 +3,9 @@ import re
 
 from keyboa import Keyboa
 
-from settings.text_settings import selected_tag
 from model.data_layer import DataLayer
 from settings.settings import LOGGER, TAG_FOR_ALL_STUDENTS, TAG_OTHER
+from settings.text_settings import selected_tag
 from tools.meta_class import MetaSingleton
 
 
@@ -16,6 +16,12 @@ class MarkupService(metaclass=MetaSingleton):
         self.logger = logging.getLogger(LOGGER)
         self.categories = self.get_categories()
         self.tags = self.get_tags(self.categories)
+
+    def create_bin_choice_tags_markup(self):
+        return Keyboa(items=list(["Да", "Нет"]), copy_text_to_callback=True).keyboard
+
+    def create_bin_choice_article_markup(self):
+        return Keyboa(items=list(["Показывать", "Не показывать"]), copy_text_to_callback=True).keyboard
 
     def create_categories_markup(self):
         return Keyboa(items=list(self.categories), copy_text_to_callback=True).keyboard
@@ -41,7 +47,7 @@ class MarkupService(metaclass=MetaSingleton):
         return categories
 
     def get_tags(self, categories):
-        buttons = ["Назад", "Найти"]
+        buttons = ["Назад"]
         tags = []
         for category in categories:
             if category != "Найти":

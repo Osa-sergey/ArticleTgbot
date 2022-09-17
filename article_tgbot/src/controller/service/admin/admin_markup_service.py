@@ -3,9 +3,9 @@ import re
 
 from keyboa import Keyboa
 
-from settings.text_settings import selected_tag
 from model.data_layer import DataLayer
 from settings.settings import LOGGER, TAG_OTHER
+from settings.text_settings import selected_tag
 from tools.meta_class import MetaSingleton
 
 
@@ -38,7 +38,7 @@ class AdminMarkupService(metaclass=MetaSingleton):
         return categories
 
     def get_admin_tags(self, categories):
-        buttons = ["Назад", "Опубликовать"]
+        buttons = ["Назад"]
         tags = []
         for category in categories:
             if category != "Опубликовать":
