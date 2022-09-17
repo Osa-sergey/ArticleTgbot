@@ -1,12 +1,12 @@
 import telebot
+from prometheus_client import start_http_server, Counter
 
-from settings.logger_conf import logger_configure
 from controller.logic_layer import *
+from settings.logger_conf import logger_configure
 from settings.settings import BOT_TOKEN
+from settings.settings import LOGGER, ID
 from tools.add_admins_tool import init_admins
 from tools.add_tags_tool import init_tags
-from settings.settings import LOGGER, ID
-from prometheus_client import start_http_server, Counter
 
 start_http_server(8000)
 logger_configure()
@@ -15,6 +15,7 @@ init_tags()
 bot = telebot.TeleBot(BOT_TOKEN, parse_mode=None)
 ll = LogicLayer(bot)
 logger = logging.getLogger(LOGGER)
+
 help_prom_counter = Counter('tgbot_help_command_total',
                             'Total number of requests to the help command',
                             ["identifier"])
@@ -30,7 +31,7 @@ student_number_prom_counter = Counter('tgbot_student_number_command_total',
 def help_command(message):
     help_prom_counter.labels(ID).inc()
     chat_id = message.chat.id
-    ll.help_hint(chat_id)
+    ll.help_cmd(chat_id)
 
 
 @bot.message_handler(commands=['start'])
@@ -41,7 +42,7 @@ def start_command(message):
 
 
 @bot.message_handler(commands=['student_number'])
-def university_id_command(message):
+def student_number_command(message):
     student_number_prom_counter.labels(ID).inc()
     chat_id = message.chat.id
     ll.student_number_cmd(chat_id)

@@ -7,8 +7,8 @@ from controller.service.admin_check_service import is_admin
 from controller.service.student.keyboard_handler_service import KeyHandlerService
 from controller.service.student.markup_service import MarkupService
 from model.data_layer import DataLayer
-from settings.text_settings import *
 from settings.settings import LOGGER
+from settings.text_settings import *
 from tools.meta_class import MetaSingleton
 
 
@@ -24,7 +24,7 @@ class LogicLayer(metaclass=MetaSingleton):
         self.logger = logging.getLogger(LOGGER)
 
     def init_university_id_and_tags(self, message):
-        if not self.save_university_id(message):
+        if not self.save_student_number(message):
             return
         self.logger.info(f"Successful registration for student: {message.chat.id}")
         self.tags_command(message)
@@ -34,7 +34,7 @@ class LogicLayer(metaclass=MetaSingleton):
         markup = self.create_categories_markup(chat_id)
         self.bot.send_message(chat_id, tags_choose_and_search, reply_markup=markup)
 
-    def save_university_id(self, message):
+    def save_student_number(self, message):
         number = message.text
         chat_id = message.chat.id
         self.logger.debug(f"Number: {number} for check matching student number format for student: {chat_id}")
@@ -65,7 +65,7 @@ class LogicLayer(metaclass=MetaSingleton):
     def is_admin_lambda(call):
         return is_admin(call.message.chat.id)
 
-    def set_article(self, chat_id, text, img_id):
+    def create_or_update_article(self, chat_id, text, img_id):
         self.dl.set_text_and_img_to_article(chat_id, text, img_id)
 
     def create_or_edit_article(self, chat_id, text, message_id, img_id=""):
@@ -74,7 +74,7 @@ class LogicLayer(metaclass=MetaSingleton):
             self.bot.send_message(chat_id=chat_id, text=empty_post_text)
             return
         if is_admin(chat_id):
-            self.set_article(chat_id, text, img_id)
+            self.create_or_update_article(chat_id, text, img_id)
             self.logger.info(f"Post successfully created or modified."
                              f" admin: {chat_id}, text: {text}, img: {img_id}, message_id: {message_id}")
             self.bot.send_message(chat_id=chat_id, text=data_accepted)
@@ -117,7 +117,7 @@ class LogicLayer(metaclass=MetaSingleton):
         else:
             return self.ms.create_categories_markup()
 
-    def help_hint(self, chat_id):
+    def help_cmd(self, chat_id):
         if is_admin(chat_id):
             self.bot.send_message(chat_id, help_admin)
         else:
@@ -139,7 +139,7 @@ class LogicLayer(metaclass=MetaSingleton):
         else:
             msg = self.bot.send_message(chat_id, student_number_student)
             self.logger.info(f"Start of enter student number. user: {chat_id}")
-            self.bot.register_next_step_handler(msg, self.save_university_id)
+            self.bot.register_next_step_handler(msg, self.save_student_number)
 
     def tags_cmd(self, chat_id):
         if is_admin(chat_id):

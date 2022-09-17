@@ -1,7 +1,7 @@
 import logging.config
+
 from settings.settings import ID
 
-WINDOWS_LOG_FILENAME = "logs\\log.txt"
 UNIX_LOG_FILENAME = "logs/log.txt"
 LOGGING_CONFIG = {
     "version": 1,
