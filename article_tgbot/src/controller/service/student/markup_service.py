@@ -41,7 +41,7 @@ class MarkupService(metaclass=MetaSingleton):
         return categories
 
     def get_tags(self, categories):
-        buttons = ["Назад", "Найти"]
+        buttons = ["Назад"]
         tags = []
         for category in categories:
             if category != "Найти":
