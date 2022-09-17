@@ -93,6 +93,12 @@ class LogicLayer(metaclass=MetaSingleton):
         elif text == back:
             self.logger.debug(f"Start handling student back button. student: {chat_id}, message_id: {message_id}")
             self.kh.handle_back_btn(chat_id, message_id)
+        elif text == yes_tags or text == no_tags:
+            self.logger.debug(f"Start handling student bin choice tags button. student: {chat_id}, message_id: {message_id}")
+            self.kh.handle_bin_choice_tags_btn(chat_id, message_id, text)
+        elif text == yes_articles or text == no_articles:
+            self.logger.debug(f"Start handling student bin choice articles button. student: {chat_id}, message_id: {message_id}")
+            self.kh.handle_bin_choice_articles_btn(chat_id, message_id, text)
         else:
             self.logger.debug(f"Start handling student tags."
                               f" student: {chat_id}, message_id: {message_id}, tag: {text}")
